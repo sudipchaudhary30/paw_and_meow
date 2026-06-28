@@ -4,12 +4,12 @@ import { usePathname, useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 
 const navItems = [
-  { href: '/dashboard', icon: '📊', label: 'Dashboard' },
-  { href: '/pets', icon: '🐾', label: 'Pets' },
-  { href: '/visits', icon: '📅', label: 'Visit Requests' },
-  { href: '/products', icon: '📦', label: 'Products' },
-  { href: '/orders', icon: '🛒', label: 'Orders' },
-  { href: '/users', icon: '👥', label: 'Users' },
+  { href: '/admin/dashboard', icon: '📊', label: 'Dashboard' },
+  { href: '/admin/pets', icon: '🐾', label: 'Pets' },
+  { href: '/admin/visits', icon: '📅', label: 'Visit Requests' },
+  { href: '/admin/products', icon: '📦', label: 'Products' },
+  { href: '/admin/orders', icon: '🛒', label: 'Orders' },
+  { href: '/admin/users', icon: '👥', label: 'Users' },
 ];
 
 export default function Sidebar() {
@@ -20,7 +20,7 @@ export default function Sidebar() {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminUser');
     toast.success('Logged out');
-    router.push('/login');
+    router.push('/admin/login');
   };
 
   return (

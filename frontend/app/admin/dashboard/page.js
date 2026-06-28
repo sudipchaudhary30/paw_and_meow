@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
-import AdminLayout from '../../components/AdminLayout';
-import { adminPetAPI, adminProductAPI, adminVisitAPI, adminOrderAPI } from '../../services/adminApi';
+import AdminLayout from '../../../components/admin/AdminLayout';
+import { adminPetAPI, adminProductAPI, adminVisitAPI, adminOrderAPI } from '../../../services/adminApi';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({ pets: 0, products: 0, visits: 0, orders: 0, pendingVisits: 0, pendingOrders: 0 });

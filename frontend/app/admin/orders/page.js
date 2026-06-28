@@ -1,8 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
-import AdminLayout from '../../components/AdminLayout';
-import Table from '../../components/Table';
-import { adminOrderAPI } from '../../services/adminApi';
+import AdminLayout from '../../../components/admin/AdminLayout';
+import Table from '../../../components/admin/Table';
+import { adminOrderAPI } from '../../../services/adminApi';
 import { toast } from 'react-hot-toast';
 
 const ORDER_STATUSES = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];

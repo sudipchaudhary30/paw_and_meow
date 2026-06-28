@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { adminAuthAPI } from '../../services/adminApi';
+import { adminAuthAPI } from '../../../services/adminApi';
 import { toast } from 'react-hot-toast';
 
 export default function AdminLogin() {
@@ -22,7 +22,7 @@ export default function AdminLogin() {
       localStorage.setItem('adminToken', data.token);
       localStorage.setItem('adminUser', JSON.stringify(data.user));
       toast.success('Welcome, Admin!');
-      router.push('/dashboard');
+      router.push('/admin/dashboard');
     } catch (err) {
       toast.error(err.response?.data?.error || 'Login failed.');
     }

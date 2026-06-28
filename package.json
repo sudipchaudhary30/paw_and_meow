@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Secure Pet Adoption & Accessories Platform",
   "scripts": {
-    "install:all": "cd backend && npm install && cd ../frontend && npm install && cd ../admin && npm install",
-    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\" \"cd admin && npm run dev\"",
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
     "seed": "cd backend && npm run seed"
   },
   "devDependencies": {

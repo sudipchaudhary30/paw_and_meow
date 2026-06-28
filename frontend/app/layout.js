@@ -1,7 +1,4 @@
 import '../styles/globals.css';
-import { Toaster } from 'react-hot-toast';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 
 export const metadata = {
   title: 'PawHome – Pet Adoption & Accessories',
@@ -12,10 +9,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <Navbar />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
-        <Toaster position="top-right" />
+        {children}
       </body>
     </html>
   );
