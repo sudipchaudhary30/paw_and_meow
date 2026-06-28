@@ -1,0 +1,51 @@
+const express = require('express');
+const { body } = require('express-validator');
+const { register, login, getMe, updateProfile } = require('../controllers/authController');
+const { protect } = require('../middleware/authMiddleware');
+const { handleValidation } = require('../middleware/validateInput');
+
+const router = express.Router();
+
+router.post('/register', [
+  body('name').trim().notEmpty().withMessage('Name is required').isLength({ max: 50 }),
+  body('email').isEmail().withMessage('Valid email required').normalizeEmail(),
+  body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
+    .matches(/^(?=.*[A-Z])(?=.*\d)/).withMessage('Password must contain uppercase letter and number'),
+  handleValidation
+], register);
+
+router.post('/login', [
+  body('email').isEmail().withMessage('Valid email required').normalizeEmail(),
+  body('password').notEmpty().withMessage('Password is required'),
+  handleValidation
+], login);
+
+router.get('/me', protect, getMe);
+router.put('/profile', protect, [
+  body('name').optional().trim().notEmpty().isLength({ max: 50 }),
+  handleValidation
+], updateProfile);
+
+module.exports = router;
+
+// Admin user management routes
+const { requireRole } = require('../middleware/roleMiddleware');
+
+router.get('/users', protect, requireRole('admin'), async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const { search, limit = 50 } = req.query;
+    const filter = search ? { $or: [{ name: { $regex: search, $options: 'i' } }, { email: { $regex: search, $options: 'i' } }] } : {};
+    const users = await User.find(filter).select('-password').sort({ createdAt: -1 }).limit(Number(limit));
+    res.json({ users });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.put('/users/:id', protect, requireRole('admin'), async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const user = await User.findByIdAndUpdate(req.params.id, { isActive: req.body.isActive }, { new: true }).select('-password');
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+    res.json({ user });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
