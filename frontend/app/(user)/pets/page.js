@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { petAPI } from '../../services/api';
-import PetCard from '../../components/PetCard';
+import { petAPI } from '../../../services/api';
+import PetCard from '../../../components/PetCard';
 
 export default function PetsPage() {
   const [pets, setPets] = useState([]);

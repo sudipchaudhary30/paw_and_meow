@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { petAPI, visitAPI } from '../../../services/api';
+import { petAPI, visitAPI } from '../../../../services/api';
 import { toast } from 'react-hot-toast';
 
 export default function PetDetailPage() {

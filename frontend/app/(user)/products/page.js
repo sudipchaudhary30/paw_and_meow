@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { productAPI } from '../../services/api';
-import ProductCard from '../../components/ProductCard';
+import { productAPI } from '../../../services/api';
+import ProductCard from '../../../components/ProductCard';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);

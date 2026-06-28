@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { authAPI } from '../../../services/api';
+import { authAPI } from '../../../../services/api';
 import { toast } from 'react-hot-toast';
 
 export default function LoginPage() {

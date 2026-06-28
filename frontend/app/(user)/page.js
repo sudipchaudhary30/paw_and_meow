@@ -1,9 +1,9 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { petAPI, productAPI } from '../services/api';
-import PetCard from '../components/PetCard';
-import ProductCard from '../components/ProductCard';
+import { petAPI, productAPI } from '../../services/api';
+import PetCard from '../../components/PetCard';
+import ProductCard from '../../components/ProductCard';
 
 export default function HomePage() {
   const [pets, setPets] = useState([]);

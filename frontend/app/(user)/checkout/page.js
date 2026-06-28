@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { orderAPI } from '../../services/api';
+import { orderAPI } from '../../../services/api';
 import { toast } from 'react-hot-toast';
 
 export default function CheckoutPage() {
