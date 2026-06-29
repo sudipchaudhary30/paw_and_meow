@@ -1,35 +1,47 @@
 import Link from 'next/link';
+import { PawPrint } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-800 text-gray-300 py-10 px-4">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div>
-          <div className="text-white font-bold text-lg mb-2">🐾 PawHome</div>
-          <p className="text-sm text-gray-400">A secure platform for pet adoption and accessories. Built with cybersecurity best practices.</p>
+    <footer className="bg-slate-900 text-slate-300 py-12 px-6 border-t border-slate-800">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="md:col-span-2">
+          <div className="text-white font-bold text-xl mb-3 flex items-center gap-2">
+            <PawPrint className="w-6 h-6 text-primary-light" /> PawHome
+          </div>
+
+          <p className="text-sm text-slate-400 max-w-sm leading-relaxed">
+            A safe, friendly, and secure platform for pet adoption and premium accessories. Connecting loving families with their perfect companions.
+          </p>
         </div>
         <div>
-          <h4 className="text-white font-semibold mb-3">Quick Links</h4>
-          <div className="flex flex-col gap-2 text-sm">
-            <Link href="/pets" className="hover:text-white transition">Browse Pets</Link>
-            <Link href="/products" className="hover:text-white transition">Products</Link>
-            <Link href="/auth/login" className="hover:text-white transition">Login</Link>
-            <Link href="/auth/register" className="hover:text-white transition">Register</Link>
+          <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Quick Links</h4>
+          <div className="flex flex-col gap-2.5 text-sm">
+            <Link href="/pets" className="hover:text-primary-light transition-colors">Browse Pets</Link>
+            <Link href="/products" className="hover:text-primary-light transition-colors">Products</Link>
+            <Link href="/about" className="hover:text-primary-light transition-colors">About Us</Link>
+            <Link href="/blog" className="hover:text-primary-light transition-colors">Our Blog</Link>
           </div>
         </div>
         <div>
-          <h4 className="text-white font-semibold mb-3">Security</h4>
-          <div className="flex flex-col gap-1 text-xs text-gray-400">
-            <span>🔒 JWT Authentication</span>
-            <span>🔐 bcrypt Password Hashing</span>
-            <span>🛡️ Role-Based Access Control</span>
-            <span>📋 Activity Logging</span>
+          <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Support & Care</h4>
+          <div className="flex flex-col gap-2.5 text-sm">
+            <Link href="/contact" className="hover:text-primary-light transition-colors">Contact Us</Link>
+            <Link href="/auth/login" className="hover:text-primary-light transition-colors">Client Login</Link>
+            <span className="text-xs text-slate-500 mt-2 block">
+              Academic Security Project
+            </span>
           </div>
         </div>
       </div>
-      <div className="max-w-6xl mx-auto mt-8 pt-6 border-t border-gray-700 text-xs text-gray-500 text-center">
-        © {new Date().getFullYear()} PawHome. Academic cybersecurity project.
+      <div className="max-w-6xl mx-auto mt-12 pt-8 border-t border-slate-800 text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <span>© {new Date().getFullYear()} PawHome. All rights reserved.</span>
+        <div className="flex gap-4">
+          <span className="hover:text-slate-400 cursor-pointer">Privacy Policy</span>
+          <span className="hover:text-slate-400 cursor-pointer">Terms of Service</span>
+        </div>
       </div>
     </footer>
   );
 }
+
