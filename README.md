@@ -1,4 +1,4 @@
-# 🐾 Pet Security Platform
+# Paw Home
 
 Pet Security Platform is a secure pet adoption and pet accessories e-commerce platform developed using the MERN stack with Next.js. The platform allows users to explore pets available for adoption, schedule pet visits, and purchase pet related products such as accessories, food, and toys. It also includes a dedicated admin panel for managing pets, products, orders, and user activities. The system focuses heavily on security, scalability, and user experience.
 
