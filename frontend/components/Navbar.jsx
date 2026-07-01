@@ -44,8 +44,7 @@ export default function Navbar() {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    localStorage.removeItem('adminToken');
-    localStorage.removeItem('adminUser');
+
     setUser(null);
     window.dispatchEvent(new Event('authUpdated'));
     router.push('/');
