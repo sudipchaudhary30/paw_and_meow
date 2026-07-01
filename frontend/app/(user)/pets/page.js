@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { petAPI } from '../../../services/api';
 import PetCard from '../../../components/PetCard';
 
@@ -11,6 +12,7 @@ export default function PetsPage() {
   const [status, setStatus] = useState('Available');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [user, setUser] = useState(null);
 
   const fetchPets = async () => {
     setLoading(true);
@@ -22,12 +24,26 @@ export default function PetsPage() {
     setLoading(false);
   };
 
+  useEffect(() => {
+    const stored = localStorage.getItem('user');
+    if (stored) setUser(JSON.parse(stored));
+  }, []);
+
   useEffect(() => { fetchPets(); }, [search, species, status, page]);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold text-gray-800 mb-2">Pets for Adoption</h1>
-      <p className="text-gray-500 mb-8">Browse available pets and schedule a visit to meet them in person.</p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800 mb-1">Pets for Adoption</h1>
+          <p className="text-gray-500">Browse available pets and schedule a visit to meet them in person.</p>
+        </div>
+        {user && (
+          <Link href="/pets/add" className="btn-primary whitespace-nowrap">
+            + List a Pet for Adoption
+          </Link>
+        )}
+      </div>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 mb-8">

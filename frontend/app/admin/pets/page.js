@@ -8,7 +8,7 @@ import { toast } from 'react-hot-toast';
 const SPECIES = ['Dog', 'Cat', 'Bird', 'Rabbit', 'Fish', 'Hamster', 'Other'];
 const STATUS = ['Available', 'Pending', 'Adopted'];
 const GENDERS = ['Male', 'Female', 'Unknown'];
-const blank = { name: '', species: 'Dog', breed: '', age: '', gender: 'Male', description: '', imageUrl: '', vaccinated: false, neutered: false, status: 'Available' };
+const blank = { name: '', species: 'Dog', breed: '', age: '', gender: 'Male', description: '', imageUrl: '', vaccinated: false, neutered: false, status: 'Available', approved: true };
 
 export default function PetsPage() {
   const [pets, setPets] = useState([]);
@@ -23,6 +23,7 @@ export default function PetsPage() {
   const fetchPets = async () => {
     setLoading(true);
     try {
+      // Admins fetch all pets, including pending approval
       const { data } = await adminPetAPI.getAll({ search, limit: 50 });
       setPets(data.pets || []);
       setTotal(data.total || 0);
@@ -67,7 +68,7 @@ export default function PetsPage() {
         <div className="card">
           {loading ? <div className="p-10 text-center text-gray-400">Loading...</div> : (
             <Table
-              columns={['Name', 'Species/Breed', 'Age', 'Status', 'Health', 'Actions']}
+              columns={['Name', 'Species/Breed', 'Age', 'Status', 'Approved', 'Health', 'Actions']}
               data={pets}
               renderRow={(pet) => (
                 <tr key={pet._id}>
@@ -76,12 +77,17 @@ export default function PetsPage() {
                   <td className="td">{pet.age ? pet.age + 'y' : '-'} • {pet.gender}</td>
                   <td className="td"><span className={'badge ' + (statusColor[pet.status] || '')}>{pet.status}</span></td>
                   <td className="td">
+                    <span className={'badge ' + (pet.approved ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700')}>
+                      {pet.approved ? 'Approved' : 'Pending'}
+                    </span>
+                  </td>
+                  <td className="td">
                     {pet.vaccinated && <span className="badge bg-blue-50 text-blue-600 mr-1">💉</span>}
                     {pet.neutered && <span className="badge bg-purple-50 text-purple-600">✂️</span>}
                   </td>
                   <td className="td">
                     <div className="flex gap-2">
-                      <button onClick={() => openEdit(pet)} className="btn-outline text-xs py-1">Edit</button>
+                      <button onClick={() => openEdit(pet)} className="btn-outline text-xs py-1">Edit / Approve</button>
                       <button onClick={() => handleDelete(pet._id, pet.name)} className="btn-danger text-xs py-1">Delete</button>
                     </div>
                   </td>
@@ -122,14 +128,20 @@ export default function PetsPage() {
               </div>
               <div><label className="text-xs font-medium text-gray-600 block mb-1">Image URL</label><input value={form.imageUrl} onChange={e => setForm({ ...form, imageUrl: e.target.value })} className="input" placeholder="https://..." /></div>
               <div><label className="text-xs font-medium text-gray-600 block mb-1">Description</label><textarea rows={3} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="input" /></div>
-              <div className="flex gap-6">
-                <label className="flex items-center gap-2 text-sm cursor-pointer">
-                  <input type="checkbox" checked={form.vaccinated} onChange={e => setForm({ ...form, vaccinated: e.target.checked })} className="rounded" />
-                  Vaccinated
-                </label>
-                <label className="flex items-center gap-2 text-sm cursor-pointer">
-                  <input type="checkbox" checked={form.neutered} onChange={e => setForm({ ...form, neutered: e.target.checked })} className="rounded" />
-                  Neutered
+              <div className="flex flex-col gap-3 py-1">
+                <div className="flex gap-6">
+                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input type="checkbox" checked={form.vaccinated} onChange={e => setForm({ ...form, vaccinated: e.target.checked })} className="rounded" />
+                    Vaccinated
+                  </label>
+                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input type="checkbox" checked={form.neutered} onChange={e => setForm({ ...form, neutered: e.target.checked })} className="rounded" />
+                    Neutered
+                  </label>
+                </div>
+                <label className="flex items-center gap-2.5 text-sm text-gray-800 cursor-pointer font-bold mt-2">
+                  <input type="checkbox" checked={form.approved} onChange={e => setForm({ ...form, approved: e.target.checked })} className="w-4 h-4 text-green-600 rounded" />
+                  Approved (Visible to adoption seekers)
                 </label>
               </div>
               <div className="flex gap-3 pt-2">

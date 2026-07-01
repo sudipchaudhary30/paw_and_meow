@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { PawPrint, ShoppingCart, Menu, X } from 'lucide-react';
+import { ShoppingCart, Menu, X } from 'lucide-react';
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
@@ -15,31 +15,51 @@ export default function Navbar() {
     setCartCount(cart.reduce((acc, i) => acc + i.quantity, 0));
   };
 
+  const checkAuth = () => {
+    const storedUser = localStorage.getItem('user');
+    const storedAdmin = localStorage.getItem('adminUser');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    } else if (storedAdmin) {
+      setUser(JSON.parse(storedAdmin));
+    } else {
+      setUser(null);
+    }
+  };
+
   useEffect(() => {
-    const stored = localStorage.getItem('user');
-    if (stored) setUser(JSON.parse(stored));
+    checkAuth();
     updateCartCount();
 
-    // Listen for cart changes
+    // Listen for cart and auth changes
     window.addEventListener('cartUpdated', updateCartCount);
+    window.addEventListener('authUpdated', checkAuth);
+    
     return () => {
       window.removeEventListener('cartUpdated', updateCartCount);
+      window.removeEventListener('authUpdated', checkAuth);
     };
   }, []);
 
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminUser');
     setUser(null);
+    window.dispatchEvent(new Event('authUpdated'));
     router.push('/');
   };
 
   return (
     <nav className="glass sticky top-0 z-50 border-b border-slate-200/50 bg-white/75 backdrop-blur-md transition-all duration-300">
-      <div className="w-full pl-6 sm:pl-10 lg:pl-16 pr-4 sm:pr-8 py-3.5 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5 font-extrabold text-2xl text-primary">
-          <PawPrint className="w-7 h-7 text-primary" />
-          <span className="bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">PawHome</span>
+      <div className="w-full pl-6 sm:pl-10 lg:pl-16 pr-4 sm:pr-8 py-2 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2.5">
+          <img 
+            src="/Assets/jullyspawlogo.png" 
+            alt="Jully's Paw Logo" 
+            className="h-12 w-auto object-contain"
+          />
         </Link>
 
         {/* Desktop Nav */}
@@ -49,7 +69,12 @@ export default function Navbar() {
           <Link href="/about" className="text-slate-600 hover:text-primary transition-colors duration-200">About Us</Link>
           <Link href="/blog" className="text-slate-600 hover:text-primary transition-colors duration-200">Blog</Link>
           <Link href="/contact" className="text-slate-600 hover:text-primary transition-colors duration-200">Contact Us</Link>
-          {user && <Link href="/profile" className="text-slate-600 hover:text-primary transition-colors duration-200">My Profile</Link>}
+          {user && user.role !== 'admin' && (
+            <Link href="/profile" className="text-slate-600 hover:text-primary transition-colors duration-200">My Profile</Link>
+          )}
+          {user && user.role === 'admin' && (
+            <Link href="/admin/dashboard" className="text-blue-600 hover:text-primary transition-colors duration-200 font-bold">Admin Dashboard</Link>
+          )}
         </div>
 
         <div className="hidden md:flex items-center gap-4">
@@ -92,7 +117,12 @@ export default function Navbar() {
           <Link href="/cart" onClick={() => setMenuOpen(false)} className="text-slate-600 hover:text-primary transition-colors">Cart ({cartCount})</Link>
           {user ? (
             <>
-              <Link href="/profile" onClick={() => setMenuOpen(false)} className="text-slate-600 hover:text-primary transition-colors">My Profile</Link>
+              {user.role !== 'admin' && (
+                <Link href="/profile" onClick={() => setMenuOpen(false)} className="text-slate-600 hover:text-primary transition-colors">My Profile</Link>
+              )}
+              {user.role === 'admin' && (
+                <Link href="/admin/dashboard" onClick={() => setMenuOpen(false)} className="text-blue-600 hover:text-primary transition-colors font-bold">Admin Dashboard</Link>
+              )}
               <button onClick={() => { logout(); setMenuOpen(false); }} className="text-left text-red-500 hover:text-red-600">Logout</button>
             </>
           ) : (

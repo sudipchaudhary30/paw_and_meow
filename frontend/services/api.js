@@ -41,6 +41,14 @@ export const authAPI = {
 export const petAPI = {
   getAll: (params) => api.get('/pets', { params }),
   getOne: (id) => api.get(`/pets/${id}`),
+  create: (data) => api.post('/pets', data),
+};
+
+// Blogs
+export const blogAPI = {
+  getAll: (params) => api.get('/blogs', { params }),
+  getOne: (id) => api.get(`/blogs/${id}`),
+  create: (data) => api.post('/blogs', data),
 };
 
 // Products

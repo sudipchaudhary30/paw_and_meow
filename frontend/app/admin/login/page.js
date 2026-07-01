@@ -21,6 +21,7 @@ export default function AdminLogin() {
       }
       localStorage.setItem('adminToken', data.token);
       localStorage.setItem('adminUser', JSON.stringify(data.user));
+      window.dispatchEvent(new Event('authUpdated'));
       toast.success('Welcome, Admin!');
       router.push('/admin/dashboard');
     } catch (err) {

@@ -3,11 +3,24 @@ const { createLog } = require('../utils/logger');
 
 const getPets = async (req, res) => {
   try {
-    const { species, status, search, page = 1, limit = 12 } = req.query;
+    const { species, status, search, page = 1, limit = 12, approved } = req.query;
     const filter = {};
     if (species) filter.species = species;
     if (status) filter.status = status;
     if (search) filter.name = { $regex: search, $options: 'i' };
+
+    // Apply approved status based on role and query parameters
+    if (approved !== undefined) {
+      if (req.user && req.user.role === 'admin') {
+        filter.approved = approved === 'true';
+      } else {
+        filter.approved = true;
+      }
+    } else {
+      if (!req.user || req.user.role !== 'admin') {
+        filter.approved = true;
+      }
+    }
 
     const total = await Pet.countDocuments(filter);
     const pets = await Pet.find(filter)
@@ -25,6 +38,12 @@ const getPet = async (req, res) => {
   try {
     const pet = await Pet.findById(req.params.id);
     if (!pet) return res.status(404).json({ error: 'Pet not found.' });
+
+    // Check if pet is approved or requester is admin
+    if (!pet.approved && (!req.user || req.user.role !== 'admin')) {
+      return res.status(403).json({ error: 'Access denied.' });
+    }
+
     res.json({ pet });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -33,7 +52,12 @@ const getPet = async (req, res) => {
 
 const createPet = async (req, res) => {
   try {
-    const pet = await Pet.create({ ...req.body, createdBy: req.user._id });
+    const isApproved = req.user.role === 'admin';
+    const pet = await Pet.create({ 
+      ...req.body, 
+      approved: isApproved, 
+      createdBy: req.user._id 
+    });
     await createLog({ user: req.user._id, action: 'CREATE_PET', resource: 'Pet', resourceId: pet._id, status: 'success', ip: req.ip });
     res.status(201).json({ pet });
   } catch (error) {

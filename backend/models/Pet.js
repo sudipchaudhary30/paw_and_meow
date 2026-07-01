@@ -23,6 +23,10 @@ const petSchema = new mongoose.Schema({
     enum: ['Available', 'Pending', 'Adopted'],
     default: 'Available'
   },
+  approved: {
+    type: Boolean,
+    default: false
+  },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, { timestamps: true });
 

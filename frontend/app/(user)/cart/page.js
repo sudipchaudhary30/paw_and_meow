@@ -14,12 +14,14 @@ export default function CartPage() {
     const updated = cart.map(i => i._id === id ? { ...i, quantity: Math.max(1, qty) } : i);
     setCart(updated);
     localStorage.setItem('cart', JSON.stringify(updated));
+    window.dispatchEvent(new Event('cartUpdated'));
   };
 
   const removeItem = (id) => {
     const updated = cart.filter(i => i._id !== id);
     setCart(updated);
     localStorage.setItem('cart', JSON.stringify(updated));
+    window.dispatchEvent(new Event('cartUpdated'));
     toast.success('Item removed');
   };
 

@@ -1,13 +1,13 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { getPets, getPet, createPet, updatePet, deletePet } = require('../controllers/petController');
+const { getBlogs, getBlog, createBlog, updateBlog, deleteBlog, approveBlog } = require('../controllers/blogController');
 const { protect } = require('../middleware/authMiddleware');
 const { requireRole } = require('../middleware/roleMiddleware');
 const { handleValidation } = require('../middleware/validateInput');
 
 const router = express.Router();
 
-// Optional protection middleware to extract user if token is present
+// Optional protection middleware to extract user if token is present (so admins can see unapproved posts)
 const protectOptional = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -27,16 +27,17 @@ const protectOptional = async (req, res, next) => {
   next();
 };
 
-router.get('/', protectOptional, getPets);
-router.get('/:id', protectOptional, getPet);
+router.get('/', protectOptional, getBlogs);
+router.get('/:id', protectOptional, getBlog);
 
 router.post('/', protect, [
-  body('name').trim().notEmpty().withMessage('Pet name required'),
-  body('species').notEmpty().withMessage('Species required'),
+  body('title').trim().notEmpty().withMessage('Title is required'),
+  body('content').notEmpty().withMessage('Content is required'),
   handleValidation
-], createPet);
+], createBlog);
 
-router.put('/:id', protect, requireRole('admin'), updatePet);
-router.delete('/:id', protect, requireRole('admin'), deletePet);
+router.put('/:id', protect, updateBlog);
+router.delete('/:id', protect, deleteBlog);
+router.put('/:id/approve', protect, requireRole('admin'), approveBlog);
 
 module.exports = router;

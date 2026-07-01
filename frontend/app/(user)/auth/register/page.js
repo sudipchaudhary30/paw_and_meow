@@ -18,6 +18,7 @@ export default function RegisterPage() {
       const { data } = await authAPI.register({ name: form.name, email: form.email, password: form.password });
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+      window.dispatchEvent(new Event('authUpdated'));
       toast.success('Account created! Welcome to PawHome.');
       router.push('/');
     } catch (err) {

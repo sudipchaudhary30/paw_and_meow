@@ -57,4 +57,11 @@ export const adminOrderAPI = {
   update: (id, data) => adminApi.put('/orders/' + id, data),
 };
 
+export const adminBlogAPI = {
+  getAll: (params) => adminApi.get('/blogs', { params }),
+  update: (id, data) => adminApi.put('/blogs/' + id, data),
+  delete: (id) => adminApi.delete('/blogs/' + id),
+  approve: (id) => adminApi.put('/blogs/' + id + '/approve'),
+};
+
 export default adminApi;

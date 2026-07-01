@@ -11,6 +11,7 @@ const petRoutes = require('./routes/petRoutes');
 const productRoutes = require('./routes/productRoutes');
 const visitRoutes = require('./routes/visitRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const blogRoutes = require('./routes/blogRoutes');
 
 const app = express();
 
@@ -55,6 +56,7 @@ app.use('/api/pets', petRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/visits', visitRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/blogs', blogRoutes);
 
 // Health Check
 app.get('/api/health', (req, res) => {

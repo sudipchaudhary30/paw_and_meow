@@ -17,6 +17,7 @@ export default function LoginPage() {
       const { data } = await authAPI.login(form);
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+      window.dispatchEvent(new Event('authUpdated'));
       toast.success('Welcome back!');
       router.push('/');
     } catch (err) {

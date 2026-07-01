@@ -1,13 +1,16 @@
 import Link from 'next/link';
-import { PawPrint } from 'lucide-react';
 
 export default function Footer() {
   return (
     <footer className="bg-slate-900 text-slate-300 py-12 px-6 border-t border-slate-800">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         <div className="md:col-span-2">
-          <div className="text-white font-bold text-xl mb-3 flex items-center gap-2">
-            <PawPrint className="w-6 h-6 text-primary-light" /> PawHome
+          <div className="mb-4">
+            <img 
+              src="/Assets/jullyspawlogo.png" 
+              alt="Jully's Paw Logo" 
+              className="h-12 w-auto object-contain"
+            />
           </div>
 
           <p className="text-sm text-slate-400 max-w-sm leading-relaxed">

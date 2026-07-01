@@ -9,6 +9,7 @@ const navItems = [
   { href: '/admin/visits', icon: '📅', label: 'Visit Requests' },
   { href: '/admin/products', icon: '📦', label: 'Products' },
   { href: '/admin/orders', icon: '🛒', label: 'Orders' },
+  { href: '/admin/blogs', icon: '📝', label: 'Blogs' },
   { href: '/admin/users', icon: '👥', label: 'Users' },
 ];
 
@@ -27,10 +28,13 @@ export default function Sidebar() {
     <aside className="w-64 bg-gray-900 min-h-screen flex flex-col">
       <div className="p-5 border-b border-gray-700">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-blue-700 rounded-lg flex items-center justify-center text-white font-bold text-lg">🐾</div>
+          <img 
+            src="/Assets/jullyspawlogo.png" 
+            alt="Logo" 
+            className="w-10 h-10 object-contain rounded"
+          />
           <div>
-            <div className="text-white font-bold text-sm">PawHome</div>
-            <div className="text-gray-400 text-xs">Admin Panel</div>
+            <div className="text-white font-bold text-sm">Admin Panel</div>
           </div>
         </div>
       </div>
