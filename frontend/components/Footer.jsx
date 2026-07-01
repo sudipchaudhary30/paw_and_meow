@@ -18,7 +18,21 @@ export default function Footer() {
           </p>
         </div>
         <div>
-          
+          <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Quick Links</h4>
+          <div className="flex flex-col gap-2.5 text-sm">
+            <Link href="/pets" className="hover:text-primary-light transition-colors">Browse Pets</Link>
+            <Link href="/products" className="hover:text-primary-light transition-colors">Products</Link>
+            <Link href="/about" className="hover:text-primary-light transition-colors">About Us</Link>
+            <Link href="/blog" className="hover:text-primary-light transition-colors">Our Blog</Link>
+          </div>
+        </div>
+        <div>
+          <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Support & Care</h4>
+          <div className="flex flex-col gap-2.5 text-sm">
+            <Link href="/contact" className="hover:text-primary-light transition-colors">Contact Us</Link>
+            <Link href="/auth/login" className="hover:text-primary-light transition-colors">Client Login</Link>
+            <span className="text-xs text-slate-500 mt-2 block">
+              Academic Security Project
             </span>
           </div>
         </div>
