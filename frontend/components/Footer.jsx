@@ -7,9 +7,9 @@ export default function Footer() {
         <div className="md:col-span-2">
           <div className="mb-4">
             <img 
-              src="/Assets/jullyspawlogo.png" 
+              src="/Assets/logo.png" 
               alt="Jully's Paw Logo" 
-              className="h-12 w-auto object-contain"
+              className="h-20 w-auto object-contain rounded-[30px]"
             />
           </div>
 
@@ -32,7 +32,6 @@ export default function Footer() {
             <Link href="/contact" className="hover:text-primary-light transition-colors">Contact Us</Link>
             <Link href="/auth/login" className="hover:text-primary-light transition-colors">Client Login</Link>
             <span className="text-xs text-slate-500 mt-2 block">
-              Academic Security Project
             </span>
           </div>
         </div>

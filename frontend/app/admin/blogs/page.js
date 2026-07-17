@@ -4,6 +4,7 @@ import AdminLayout from '../../../components/admin/AdminLayout';
 import Table from '../../../components/admin/Table';
 import { adminBlogAPI } from '../../../services/adminApi';
 import { toast } from 'react-hot-toast';
+import { X, Trash2, CheckCircle, Eye, PenSquare } from 'lucide-react';
 
 const CATEGORIES = ['Dog Care', 'Nutrition', 'Security', 'Adoption', 'Other'];
 const statusColor = {
@@ -57,13 +58,18 @@ export default function AdminBlogsPage() {
   return (
     <AdminLayout title="Blog Management">
       <div className="space-y-4">
-        <div className="flex gap-3 items-center flex-wrap">
-          <select value={filterApproved} onChange={e => setFilterApproved(e.target.value)} className="input max-w-xs">
-            <option value="">All Posts</option>
-            <option value="true">Approved</option>
-            <option value="false">Pending Approval</option>
-          </select>
-          <span className="text-sm text-gray-500">{total} total</span>
+        <div className="flex gap-3 items-center flex-wrap justify-between">
+          <div className="flex gap-3 items-center flex-wrap">
+            <select value={filterApproved} onChange={e => setFilterApproved(e.target.value)} className="input max-w-xs">
+              <option value="">All Posts</option>
+              <option value="true">Approved</option>
+              <option value="false">Pending Approval</option>
+            </select>
+            <span className="text-sm text-gray-500">{total} total</span>
+          </div>
+          <a href="/blog/add" className="btn-primary flex items-center gap-2 text-sm">
+            <PenSquare className="w-4 h-4" /> Write Post
+          </a>
         </div>
 
         <div className="card">
@@ -91,13 +97,13 @@ export default function AdminBlogsPage() {
                   </td>
                   <td className="td">
                     <div className="flex gap-2">
-                      <button onClick={() => openDetail(blog)} className="btn-outline text-xs py-1">View</button>
+                      <button onClick={() => openDetail(blog)} className="btn-outline text-xs py-1 flex items-center gap-1"><Eye className="w-3 h-3"/>View</button>
                       {!blog.approved && (
-                        <button onClick={() => handleApprove(blog._id)} disabled={saving} className="text-xs py-1 px-3 rounded bg-green-600 text-white hover:bg-green-700 transition-colors font-medium disabled:opacity-50">
-                          Approve
+                        <button onClick={() => handleApprove(blog._id)} disabled={saving} className="text-xs py-1 px-3 rounded-lg bg-secondary text-white hover:bg-secondary-dark transition-colors font-semibold disabled:opacity-50 flex items-center gap-1">
+                          <CheckCircle className="w-3 h-3"/>Approve
                         </button>
                       )}
-                      <button onClick={() => handleDelete(blog._id, blog.title)} className="btn-danger text-xs py-1">Delete</button>
+                      <button onClick={() => handleDelete(blog._id, blog.title)} className="btn-danger text-xs py-1 flex items-center gap-1"><Trash2 className="w-3 h-3"/>Delete</button>
                     </div>
                   </td>
                 </tr>
@@ -111,9 +117,9 @@ export default function AdminBlogsPage() {
       {selected && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="p-5 border-b flex justify-between items-start">
+            <div className="p-5 border-b border-slate-100 flex justify-between items-start">
               <div>
-                <h2 className="font-bold text-gray-800 text-lg">{selected.title}</h2>
+                <h2 className="font-bold text-slate-800 text-lg">{selected.title}</h2>
                 <div className="flex gap-2 items-center mt-1">
                   <span className="badge bg-gray-100 text-gray-600 text-xs">{selected.category}</span>
                   <span className={'badge text-xs ' + (statusColor[selected.approved] || '')}>
@@ -121,7 +127,7 @@ export default function AdminBlogsPage() {
                   </span>
                 </div>
               </div>
-              <button onClick={() => setSelected(null)} className="text-gray-400 hover:text-gray-600 text-lg">✕</button>
+              <button onClick={() => setSelected(null)} className="text-slate-400 hover:text-slate-700 transition-colors ml-4 mt-1"><X className="w-5 h-5"/></button>
             </div>
             <div className="p-5 space-y-4">
               <div className="text-sm text-gray-500">

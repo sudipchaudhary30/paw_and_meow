@@ -17,9 +17,21 @@ export default function LoginPage() {
       const { data } = await authAPI.login(form);
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+      
+      // Store under admin keys for backward compatibility
+      if (data.user.role === 'admin') {
+        localStorage.setItem('adminToken', data.token);
+        localStorage.setItem('adminUser', JSON.stringify(data.user));
+      }
+      
       window.dispatchEvent(new Event('authUpdated'));
       toast.success('Welcome back!');
-      router.push('/');
+      
+      if (data.user.role === 'admin') {
+        router.push('/admin/dashboard');
+      } else {
+        router.push('/');
+      }
     } catch (err) {
       toast.error(err.response?.data?.error || 'Login failed.');
     }

@@ -42,6 +42,7 @@ export const petAPI = {
   getAll: (params) => api.get('/pets', { params }),
   getOne: (id) => api.get(`/pets/${id}`),
   create: (data) => api.post('/pets', data),
+  getStats: () => api.get('/pets/stats'),
 };
 
 // Blogs
@@ -68,6 +69,11 @@ export const visitAPI = {
 export const orderAPI = {
   place: (data) => api.post('/orders', data),
   getMy: () => api.get('/orders/my'),
+};
+
+// Image Upload
+export const uploadAPI = {
+  uploadImage: (formData) => api.post('/upload', formData),
 };
 
 export default api;

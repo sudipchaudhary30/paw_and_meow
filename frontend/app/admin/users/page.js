@@ -4,6 +4,7 @@ import AdminLayout from '../../../components/admin/AdminLayout';
 import Table from '../../../components/admin/Table';
 import adminApi from '../../../services/adminApi';
 import { toast } from 'react-hot-toast';
+import { ShieldOff, ShieldCheck, Search } from 'lucide-react';
 
 export default function UsersPage() {
   const [users, setUsers] = useState([]);
@@ -32,7 +33,15 @@ export default function UsersPage() {
   return (
     <AdminLayout title="Users Management">
       <div className="space-y-4">
-        <input placeholder="Search users..." value={search} onChange={e => setSearch(e.target.value)} className="input max-w-xs" />
+        <div className="flex items-center gap-2 relative max-w-xs">
+          <Search className="w-4 h-4 absolute left-3 text-slate-400" />
+          <input
+            placeholder="Search users..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="input pl-9"
+          />
+        </div>
         <div className="card">
           {loading ? <div className="p-10 text-center text-gray-400">Loading...</div> : (
             <Table
@@ -48,8 +57,11 @@ export default function UsersPage() {
                   <td className="td text-xs text-gray-400">{new Date(u.createdAt).toLocaleDateString()}</td>
                   <td className="td">
                     {u.role !== 'admin' && (
-                      <button onClick={() => toggleActive(u)} className={'text-xs py-1 ' + (u.isActive ? 'btn-danger' : 'btn-outline')}>
-                        {u.isActive ? 'Disable' : 'Enable'}
+                      <button
+                        onClick={() => toggleActive(u)}
+                        className={'text-xs py-1.5 px-3 rounded-lg font-semibold flex items-center gap-1.5 transition-colors ' + (u.isActive ? 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200' : 'btn-outline')}
+                      >
+                        {u.isActive ? <><ShieldOff className="w-3 h-3" />Disable</> : <><ShieldCheck className="w-3 h-3" />Enable</>}
                       </button>
                     )}
                   </td>

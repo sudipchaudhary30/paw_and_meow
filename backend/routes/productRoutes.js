@@ -7,8 +7,24 @@ const { handleValidation } = require('../middleware/validateInput');
 
 const router = express.Router();
 
-router.get('/', getProducts);
-router.get('/:id', getProduct);
+// Optional auth - silently attaches req.user if a valid token is present
+const protectOptional = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+      const { verifyToken } = require('../utils/jwt');
+      const User = require('../models/User');
+      const decoded = verifyToken(token);
+      const user = await User.findById(decoded.id).select('-password');
+      if (user && user.isActive) req.user = user;
+    }
+  } catch { /* fail silently */ }
+  next();
+};
+
+router.get('/', protectOptional, getProducts);
+router.get('/:id', protectOptional, getProduct);
 
 router.post('/', protect, requireRole('admin'), [
   body('name').trim().notEmpty().withMessage('Product name required'),

@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import { adminPetAPI, adminProductAPI, adminVisitAPI, adminOrderAPI } from '../../../services/adminApi';
+import { PawPrint, Package, Calendar, ShoppingCart, Clock, AlertTriangle } from 'lucide-react';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({ pets: 0, products: 0, visits: 0, orders: 0, pendingVisits: 0, pendingOrders: 0 });
@@ -31,12 +32,12 @@ export default function Dashboard() {
   }, []);
 
   const statCards = [
-    { label: 'Total Pets', value: stats.pets, icon: '🐾', color: 'bg-green-50 text-green-700' },
-    { label: 'Products', value: stats.products, icon: '📦', color: 'bg-blue-50 text-blue-700' },
-    { label: 'Visit Requests', value: stats.visits, icon: '📅', color: 'bg-yellow-50 text-yellow-700' },
-    { label: 'Orders', value: stats.orders, icon: '🛒', color: 'bg-purple-50 text-purple-700' },
-    { label: 'Pending Visits', value: stats.pendingVisits, icon: '⏳', color: 'bg-orange-50 text-orange-700' },
-    { label: 'Pending Orders', value: stats.pendingOrders, icon: '⚠️', color: 'bg-red-50 text-red-700' },
+    { label: 'Total Pets', value: stats.pets, icon: PawPrint, color: 'bg-green-50 text-green-700 border border-green-100' },
+    { label: 'Products', value: stats.products, icon: Package, color: 'bg-blue-50 text-blue-700 border border-blue-100' },
+    { label: 'Visit Requests', value: stats.visits, icon: Calendar, color: 'bg-yellow-50 text-yellow-700 border border-yellow-100' },
+    { label: 'Orders', value: stats.orders, icon: ShoppingCart, color: 'bg-purple-50 text-purple-700 border border-purple-100' },
+    { label: 'Pending Visits', value: stats.pendingVisits, icon: Clock, color: 'bg-orange-50 text-orange-700 border border-orange-100' },
+    { label: 'Pending Orders', value: stats.pendingOrders, icon: AlertTriangle, color: 'bg-red-50 text-red-700 border border-red-100' },
   ];
 
   const statusBadge = (status) => {
@@ -49,12 +50,14 @@ export default function Dashboard() {
       <div className="space-y-6">
         {/* Stat Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-          {statCards.map(({ label, value, icon, color }) => (
+          {statCards.map(({ label, value, icon: Icon, color }) => (
             <div key={label} className="card p-5 flex items-center gap-4">
-              <div className={'w-12 h-12 rounded-xl flex items-center justify-center text-2xl ' + color}>{icon}</div>
+              <div className={'w-12 h-12 rounded-xl flex items-center justify-center ' + color}>
+                <Icon className="w-5 h-5" />
+              </div>
               <div>
-                <div className="text-2xl font-bold text-gray-800">{value}</div>
-                <div className="text-sm text-gray-500">{label}</div>
+                <div className="text-2xl font-bold text-slate-800">{value}</div>
+                <div className="text-sm text-slate-500">{label}</div>
               </div>
             </div>
           ))}

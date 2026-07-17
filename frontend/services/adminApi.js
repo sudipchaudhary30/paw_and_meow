@@ -9,7 +9,7 @@ const adminApi = axios.create({
 
 adminApi.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('adminToken');
+    const token = localStorage.getItem('token') || localStorage.getItem('adminToken');
     if (token) config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
@@ -19,9 +19,11 @@ adminApi.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401 && typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
       localStorage.removeItem('adminToken');
       localStorage.removeItem('adminUser');
-      window.location.href = '/admin/login';
+      window.location.href = '/auth/login';
     }
     return Promise.reject(err);
   }
@@ -59,9 +61,14 @@ export const adminOrderAPI = {
 
 export const adminBlogAPI = {
   getAll: (params) => adminApi.get('/blogs', { params }),
+  create: (data) => adminApi.post('/blogs', data),
   update: (id, data) => adminApi.put('/blogs/' + id, data),
   delete: (id) => adminApi.delete('/blogs/' + id),
   approve: (id) => adminApi.put('/blogs/' + id + '/approve'),
+};
+
+export const adminUploadAPI = {
+  uploadImage: (formData) => adminApi.post('/upload', formData),
 };
 
 export default adminApi;

@@ -6,12 +6,14 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/db');
 
+const path = require('path');
 const authRoutes = require('./routes/authRoutes');
 const petRoutes = require('./routes/petRoutes');
 const productRoutes = require('./routes/productRoutes');
 const visitRoutes = require('./routes/visitRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const blogRoutes = require('./routes/blogRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
 
 const app = express();
 
@@ -19,7 +21,10 @@ const app = express();
 connectDB();
 
 // Security Middleware
-app.use(helmet());
+app.use(helmet({
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: 'cross-origin' }
+}));
 app.use(cors({
   origin: [
     process.env.CLIENT_URL || 'http://localhost:3000',
@@ -50,6 +55,13 @@ app.use(express.urlencoded({ extended: true }));
 // HTTP Request Logging
 app.use(morgan('combined'));
 
+// Static serving of uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+  setHeaders: (res) => {
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  }
+}));
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/pets', petRoutes);
@@ -57,6 +69,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/visits', visitRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/blogs', blogRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Health Check
 app.get('/api/health', (req, res) => {

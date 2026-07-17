@@ -4,6 +4,7 @@ import AdminLayout from '../../../components/admin/AdminLayout';
 import Table from '../../../components/admin/Table';
 import { adminVisitAPI } from '../../../services/adminApi';
 import { toast } from 'react-hot-toast';
+import { X } from 'lucide-react';
 
 const STATUS_OPTIONS = ['Pending', 'Approved', 'Rejected', 'Completed', 'Cancelled'];
 const statusColor = { Pending: 'bg-yellow-100 text-yellow-700', Approved: 'bg-green-100 text-green-700', Rejected: 'bg-red-100 text-red-700', Completed: 'bg-blue-100 text-blue-700', Cancelled: 'bg-gray-100 text-gray-600' };
@@ -75,9 +76,9 @@ export default function VisitsPage() {
       {selected && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-md">
-            <div className="p-5 border-b flex justify-between">
-              <h2 className="font-bold text-gray-800">Manage Visit</h2>
-              <button onClick={() => setSelected(null)} className="text-gray-400 hover:text-gray-600">✕</button>
+            <div className="p-5 border-b border-slate-100 flex justify-between items-center">
+              <h2 className="font-bold text-slate-800 text-lg">Manage Visit</h2>
+              <button onClick={() => setSelected(null)} className="text-slate-400 hover:text-slate-700 transition-colors"><X className="w-5 h-5"/></button>
             </div>
             <div className="p-5 text-sm text-gray-600 space-y-2 border-b">
               <p><strong>User:</strong> {selected.user?.name} ({selected.user?.email})</p>

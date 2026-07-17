@@ -9,10 +9,18 @@ import { PawPrint, Heart, ShoppingBag, Star } from 'lucide-react';
 export default function HomePage() {
   const [pets, setPets] = useState([]);
   const [products, setProducts] = useState([]);
+  const [stats, setStats] = useState({ petsAdopted: 0, productsSold: 0, avgRating: 4.9 });
 
   useEffect(() => {
     petAPI.getAll({ limit: 4, status: 'Available' }).then(r => setPets(r.data.pets || [])).catch(() => {});
     productAPI.getAll({ limit: 4 }).then(r => setProducts(r.data.products || [])).catch(() => {});
+    petAPI.getStats().then(r => {
+      setStats({
+        petsAdopted: r.data.petsAdopted || 0,
+        productsSold: r.data.productsSold || 0,
+        avgRating: r.data.avgRating || 4.9
+      });
+    }).catch(() => {});
   }, []);
 
   return (
@@ -52,9 +60,9 @@ export default function HomePage() {
       <section className="bg-white py-10 border-b border-slate-100">
         <div className="max-w-5xl mx-auto grid grid-cols-3 gap-4 sm:gap-6 text-center">
           {[
-            { icon: <Heart className="w-8 h-8 text-red-500 mx-auto" />, val: '200+', label: 'Pets Adopted' },
-            { icon: <ShoppingBag className="w-8 h-8 text-primary mx-auto" />, val: '500+', label: 'Products Sold' },
-            { icon: <Star className="w-8 h-8 text-accent mx-auto" />, val: '4.9', label: 'Avg User Rating' }
+            { icon: <Heart className="w-8 h-8 text-red-500 mx-auto" />, val: stats.petsAdopted, label: 'Pets Adopted' },
+            { icon: <ShoppingBag className="w-8 h-8 text-primary mx-auto" />, val: stats.productsSold, label: 'Products Sold' },
+            { icon: <Star className="w-8 h-8 text-accent mx-auto" />, val: stats.avgRating.toFixed(1), label: 'Avg User Rating' }
           ].map((stat, index) => (
             <div key={index} className="p-4 rounded-2xl hover:bg-slate-50 transition-colors duration-200">
               <div className="mb-2">{stat.icon}</div>

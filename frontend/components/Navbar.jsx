@@ -19,9 +19,11 @@ export default function Navbar() {
     const storedUser = localStorage.getItem('user');
     const storedAdmin = localStorage.getItem('adminUser');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsed = JSON.parse(storedUser);
+      setUser(parsed);
     } else if (storedAdmin) {
-      setUser(JSON.parse(storedAdmin));
+      const parsed = JSON.parse(storedAdmin);
+      setUser(parsed);
     } else {
       setUser(null);
     }
@@ -56,9 +58,9 @@ export default function Navbar() {
       <div className="w-full pl-6 sm:pl-10 lg:pl-16 pr-4 sm:pr-8 py-2 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5">
           <img 
-            src="/Assets/jullyspawlogo.png" 
+            src="/Assets/logo.png" 
             alt="Jully's Paw Logo" 
-            className="h-12 w-auto object-contain"
+            className="h-20 w-auto object-contain"
           />
         </Link>
 

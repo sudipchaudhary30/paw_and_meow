@@ -4,7 +4,10 @@ const { createLog } = require('../utils/logger');
 const getProducts = async (req, res) => {
   try {
     const { category, search, page = 1, limit = 12 } = req.query;
-    const filter = { isActive: true };
+
+    // Admins see all products; public only sees active ones
+    const filter = req.user?.role === 'admin' ? {} : { isActive: true };
+
     if (category) filter.category = category;
     if (search) filter.name = { $regex: search, $options: 'i' };
 

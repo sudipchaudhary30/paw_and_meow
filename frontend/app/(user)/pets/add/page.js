@@ -1,8 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { petAPI } from '../../../../services/api';
+import { petAPI, uploadAPI } from '../../../../services/api';
 import { toast } from 'react-hot-toast';
+import { Plus, X } from 'lucide-react';
 
 const SPECIES = ['Dog', 'Cat', 'Bird', 'Rabbit', 'Fish', 'Hamster', 'Other'];
 const GENDERS = ['Male', 'Female', 'Unknown'];
@@ -12,6 +13,25 @@ export default function AddPetPage() {
   const router = useRouter();
   const [form, setForm] = useState(blankForm);
   const [loading, setLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    setUploadingImage(true);
+    try {
+      const { data } = await uploadAPI.uploadImage(formData);
+      setForm(f => ({ ...f, imageUrl: data.url }));
+      toast.success('Image uploaded successfully.');
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to upload image.');
+    }
+    setUploadingImage(false);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -101,14 +121,33 @@ export default function AddPetPage() {
               </select>
             </div>
             <div>
-              <label className="text-xs font-semibold text-gray-600 block mb-1">Image URL</label>
-              <input 
-                type="text" 
-                value={form.imageUrl} 
-                onChange={e => setForm({ ...form, imageUrl: e.target.value })} 
-                className="input" 
-                placeholder="https://images.unsplash.com/..."
-              />
+              <label className="text-xs font-semibold text-gray-600 block mb-1">Pet Photo</label>
+              {form.imageUrl ? (
+                <div className="relative w-full h-32 border border-slate-200 rounded-lg overflow-hidden group bg-slate-50">
+                  <img src={form.imageUrl} alt="Pet Preview" className="w-full h-full object-cover" />
+                  <button 
+                    type="button" 
+                    onClick={() => setForm(f => ({ ...f, imageUrl: '' }))}
+                    className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-90 hover:opacity-100 transition-opacity"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <Plus className="w-8 h-8 text-slate-400 mb-2" />
+                    <p className="text-xs text-slate-500 font-semibold">{uploadingImage ? 'Uploading...' : 'Upload from device'}</p>
+                  </div>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    disabled={uploadingImage}
+                    onChange={handleImageUpload} 
+                    className="hidden" 
+                  />
+                </label>
+              )}
             </div>
           </div>
 

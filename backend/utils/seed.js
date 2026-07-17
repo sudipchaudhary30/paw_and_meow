@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../../.env' });
+require('dotenv').config({ path: '../.env' });
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
@@ -13,28 +13,40 @@ const seed = async () => {
   await Promise.all([User.deleteMany(), Pet.deleteMany(), Product.deleteMany()]);
 
   // Create admin
-  const admin = await User.create({
-    name: 'Admin',
-    email: 'admin@petplatform.com',
-    password: 'Admin@12345',
-    role: 'admin'
-  });
+  // Create admin from environment variables (do NOT keep plaintext credentials in source)
+  let admin = null;
+  if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
+    admin = await User.create({
+      name: process.env.ADMIN_NAME || 'Admin',
+      email: process.env.ADMIN_EMAIL,
+      password: process.env.ADMIN_PASSWORD,
+      role: 'admin'
+    });
+    console.log('Admin account created:', process.env.ADMIN_EMAIL);
+  } else {
+    console.log('Skipping admin creation. Set ADMIN_EMAIL and ADMIN_PASSWORD in your environment to create one.');
+  }
 
-  // Create sample user
-  await User.create({
-    name: 'Sudip User',
-    email: 'user@petplatform.com',
-    password: 'User@12345',
-    role: 'user'
-  });
+  // Optional sample user from environment (skip if not provided)
+  if (process.env.SAMPLE_USER_EMAIL && process.env.SAMPLE_USER_PASSWORD) {
+    await User.create({
+      name: process.env.SAMPLE_USER_NAME || 'Sample User',
+      email: process.env.SAMPLE_USER_EMAIL,
+      password: process.env.SAMPLE_USER_PASSWORD,
+      role: 'user'
+    });
+    console.log('Sample user created:', process.env.SAMPLE_USER_EMAIL);
+  } else {
+    console.log('Skipping sample user creation. Set SAMPLE_USER_EMAIL and SAMPLE_USER_PASSWORD to create one.');
+  }
 
   // Sample pets
   const pets = [
-    { name: 'Buddy', species: 'Dog', breed: 'Golden Retriever', age: 2, gender: 'Male', description: 'Friendly and playful golden retriever.', vaccinated: true, neutered: false, status: 'Available', createdBy: admin._id },
-    { name: 'Luna', species: 'Cat', breed: 'Persian', age: 1, gender: 'Female', description: 'Calm and affectionate Persian cat.', vaccinated: true, neutered: true, status: 'Available', createdBy: admin._id },
-    { name: 'Max', species: 'Dog', breed: 'Labrador', age: 3, gender: 'Male', description: 'Energetic Labrador who loves outdoors.', vaccinated: true, neutered: false, status: 'Available', createdBy: admin._id },
-    { name: 'Bella', species: 'Rabbit', breed: 'Holland Lop', age: 1, gender: 'Female', description: 'Gentle rabbit great for families.', vaccinated: false, neutered: false, status: 'Available', createdBy: admin._id },
-    { name: 'Tweety', species: 'Bird', breed: 'Canary', age: 1, gender: 'Unknown', description: 'Beautiful singing canary.', vaccinated: false, neutered: false, status: 'Available', createdBy: admin._id },
+    { name: 'Buddy', species: 'Dog', breed: 'Golden Retriever', age: 2, gender: 'Male', description: 'Friendly and playful golden retriever.', vaccinated: true, neutered: false, status: 'Available', createdBy: admin ? admin._id : undefined },
+    { name: 'Luna', species: 'Cat', breed: 'Persian', age: 1, gender: 'Female', description: 'Calm and affectionate Persian cat.', vaccinated: true, neutered: true, status: 'Available', createdBy: admin ? admin._id : undefined },
+    { name: 'Max', species: 'Dog', breed: 'Labrador', age: 3, gender: 'Male', description: 'Energetic Labrador who loves outdoors.', vaccinated: true, neutered: false, status: 'Available', createdBy: admin ? admin._id : undefined },
+    { name: 'Bella', species: 'Rabbit', breed: 'Holland Lop', age: 1, gender: 'Female', description: 'Gentle rabbit great for families.', vaccinated: false, neutered: false, status: 'Available', createdBy: admin ? admin._id : undefined },
+    { name: 'Tweety', species: 'Bird', breed: 'Canary', age: 1, gender: 'Unknown', description: 'Beautiful singing canary.', vaccinated: false, neutered: false, status: 'Available', createdBy: admin ? admin._id : undefined },
   ];
   await Pet.insertMany(pets);
 
@@ -52,8 +64,6 @@ const seed = async () => {
   await Product.insertMany(products);
 
   console.log('✅ Database seeded successfully!');
-  console.log('Admin: admin@petplatform.com / Admin@12345');
-  console.log('User:  user@petplatform.com / User@12345');
   mongoose.disconnect();
 };
 

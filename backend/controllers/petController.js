@@ -87,4 +87,32 @@ const deletePet = async (req, res) => {
   }
 };
 
-module.exports = { getPets, getPet, createPet, updatePet, deletePet };
+const getPetStats = async (req, res) => {
+  try {
+    const Order = require('../models/Order');
+    const petsAdopted = await Pet.countDocuments({ status: 'Adopted' });
+
+    // Sum all quantities from non-cancelled orders
+    const orders = await Order.find({ status: { $ne: 'Cancelled' } });
+    let productsSold = 0;
+    orders.forEach(order => {
+      if (order.items) {
+        order.items.forEach(item => {
+          productsSold += item.quantity || 0;
+        });
+      }
+    });
+
+    const avgRating = 4.9; // Base system rating
+
+    res.json({
+      petsAdopted,
+      productsSold,
+      avgRating
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { getPets, getPet, createPet, updatePet, deletePet, getPetStats };

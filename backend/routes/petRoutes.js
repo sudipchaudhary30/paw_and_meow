@@ -1,6 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { getPets, getPet, createPet, updatePet, deletePet } = require('../controllers/petController');
+const { getPets, getPet, createPet, updatePet, deletePet, getPetStats } = require('../controllers/petController');
 const { protect } = require('../middleware/authMiddleware');
 const { requireRole } = require('../middleware/roleMiddleware');
 const { handleValidation } = require('../middleware/validateInput');
@@ -28,6 +28,7 @@ const protectOptional = async (req, res, next) => {
 };
 
 router.get('/', protectOptional, getPets);
+router.get('/stats', getPetStats);
 router.get('/:id', protectOptional, getPet);
 
 router.post('/', protect, [
