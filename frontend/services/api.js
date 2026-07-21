@@ -5,14 +5,46 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 const api = axios.create({
   baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
+  withCredentials: true, // send HttpOnly cookies to the API
 });
 
-// Attach token on every request
-api.interceptors.request.use((config) => {
+// Helper to get cookie value by name
+function getCookie(name) {
+  if (typeof document === 'undefined') return null;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+}
+
+// Attach token and handle CSRF on every request
+api.interceptors.request.use(async (config) => {
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('token');
     if (token) config.headers.Authorization = `Bearer ${token}`;
   }
+
+  // Double-Submit Cookie CSRF injection
+  const method = config.method?.toLowerCase();
+  const safeMethods = ['get', 'head', 'options'];
+  if (!safeMethods.includes(method)) {
+    let csrfToken = getCookie('csrf_token');
+
+    // If the cookie is missing, fetch a new one synchronously
+    if (!csrfToken) {
+      try {
+        const res = await axios.get(`${API_URL}/csrf-token`, { withCredentials: true });
+        csrfToken = res.data.csrfToken;
+      } catch (err) {
+        console.error('Failed to initialize CSRF token:', err);
+      }
+    }
+
+    if (csrfToken) {
+      config.headers['X-CSRF-Token'] = csrfToken;
+    }
+  }
+
   return config;
 });
 
