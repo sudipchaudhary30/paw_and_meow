@@ -89,7 +89,7 @@ export default function ContactPage() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="input"
-                    placeholder="Sudip"
+                    placeholder="Name"
                   />
                 </div>
                 <div>

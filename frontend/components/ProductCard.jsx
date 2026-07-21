@@ -20,7 +20,7 @@ export default function ProductCard({ product }) {
     <div className="card group hover:shadow-md transition-shadow duration-200 flex flex-col h-full">
       
       {/* Product Image */}
-      <div className="h-48 bg-slate-50 flex items-center justify-center overflow-hidden relative">
+      <div className="h-44 sm:h-48 bg-slate-50 flex items-center justify-center overflow-hidden relative">
         {product.imageUrl ? (
           <img 
             src={product.imageUrl} 
@@ -39,7 +39,7 @@ export default function ProductCard({ product }) {
 
 
       {/* Product Details */}
-      <div className="p-4 flex flex-col flex-grow">
+      <div className="p-4 sm:p-5 flex flex-col flex-grow">
         <h3 className="font-bold text-slate-800 text-sm mb-1 line-clamp-2 leading-tight group-hover:text-primary transition-colors">
           {product.name}
         </h3>

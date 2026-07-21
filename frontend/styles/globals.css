@@ -5,9 +5,21 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  * {
+    @apply box-border;
+  }
+
   body {
-    @apply bg-[#F8FAFC] text-slate-800 antialiased;
+    @apply bg-[#F8FAFC] text-slate-800 antialiased overflow-x-hidden;
     font-family: 'Outfit', sans-serif;
+  }
+
+  img {
+    @apply max-w-full;
   }
 }
 

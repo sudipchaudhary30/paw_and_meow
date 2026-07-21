@@ -234,5 +234,75 @@ const importProfile = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getMe, updateProfile, exportProfile, importProfile, requestPasswordless, passwordlessLogin, googleLogin };
+/**
+ * Send a 6-character hex email verification code to the authenticated user.
+ * In production: send via email (Nodemailer/SendGrid). For this academic
+ * submission the token is returned in the JSON response for Postman/Burp demo.
+ */
+const requestEmailVerification = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('+emailVerifyToken +emailVerifyExpires');
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+    if (user.isEmailVerified) {
+      return res.status(200).json({ message: 'Email is already verified.' });
+    }
+    const token = crypto.randomBytes(3).toString('hex').toUpperCase();
+    user.emailVerifyToken = token;
+    user.emailVerifyExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    await user.save();
+    await createLog({ user: user._id, action: 'EMAIL_VERIFY_REQUEST', status: 'success', ip: req.ip });
+    res.json({ message: 'Verification code generated.', verificationCode: token });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
+/** Confirm email by submitting the verification code */
+const verifyEmail = async (req, res) => {
+  try {
+    const { code } = req.body;
+    const user = await User.findById(req.user._id).select('+emailVerifyToken +emailVerifyExpires');
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+    if (user.isEmailVerified) return res.status(200).json({ message: 'Email already verified.' });
+    if (
+      !user.emailVerifyToken ||
+      user.emailVerifyToken !== code ||
+      !user.emailVerifyExpires ||
+      user.emailVerifyExpires < new Date()
+    ) {
+      await createLog({ user: user._id, action: 'EMAIL_VERIFY_FAIL', status: 'failure', ip: req.ip });
+      return res.status(400).json({ error: 'Invalid or expired verification code.' });
+    }
+    user.isEmailVerified = true;
+    user.emailVerifyToken = undefined;
+    user.emailVerifyExpires = undefined;
+    await user.save();
+    await createLog({ user: user._id, action: 'EMAIL_VERIFIED', status: 'success', ip: req.ip });
+    res.json({ message: 'Email verified successfully.' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+/** Logout: invalidate HttpOnly session cookie and log the event */
+const clearSession = async (req, res) => {
+  try {
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
+    if (req.user) {
+      await createLog({ user: req.user._id, action: 'LOGOUT', status: 'success', ip: req.ip });
+    }
+    res.json({ message: 'Logged out successfully.' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = {
+  register, login, getMe, updateProfile, exportProfile, importProfile,
+  requestPasswordless, passwordlessLogin, googleLogin,
+  requestEmailVerification, verifyEmail, clearSession
+};

@@ -3,6 +3,14 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { petAPI, visitAPI } from '../../../../services/api';
 import { toast } from 'react-hot-toast';
+import { ArrowLeft, PawPrint, CalendarCheck, Syringe, Scissors, Dog, Cat, Feather, Coffee } from 'lucide-react';
+
+const speciesIcons = {
+  Dog: Dog,
+  Cat: Cat,
+  Bird: Feather,
+  Rabbit: Coffee,
+};
 
 export default function PetDetailPage() {
   const { id } = useParams();
@@ -35,16 +43,18 @@ export default function PetDetailPage() {
   if (loading) return <div className="text-center py-20 text-gray-400">Loading...</div>;
   if (!pet) return <div className="text-center py-20 text-gray-400">Pet not found.</div>;
 
-  const speciesEmoji = { Dog: '🐕', Cat: '🐈', Bird: '🐦', Rabbit: '🐇' };
+  const SpeciesIcon = speciesIcons[pet.species] || PawPrint;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
-      <button onClick={() => router.back()} className="text-primary text-sm mb-6 hover:underline">← Back</button>
+      <button onClick={() => router.back()} className="text-primary text-sm mb-6 inline-flex items-center gap-2 hover:underline">
+        <ArrowLeft className="w-4 h-4" /> Back
+      </button>
       <div className="grid md:grid-cols-2 gap-10">
         <div>
           <div className="bg-gradient-to-br from-green-100 to-green-200 rounded-2xl h-72 flex items-center justify-center">
             {pet.imageUrl ? <img src={pet.imageUrl} alt={pet.name} className="w-full h-full object-cover rounded-2xl" /> :
-              <span className="text-8xl">{speciesEmoji[pet.species] || '🐾'}</span>}
+              <div className="text-8xl text-green-600"><SpeciesIcon className="w-20 h-20" /></div>}
           </div>
         </div>
         <div>
@@ -55,14 +65,22 @@ export default function PetDetailPage() {
           <p className="text-gray-500 mb-4">{pet.breed || pet.species} • {pet.age ? `${pet.age} years old` : 'Age unknown'} • {pet.gender}</p>
           <p className="text-gray-700 mb-6">{pet.description}</p>
           <div className="flex gap-3 mb-6">
-            {pet.vaccinated && <span className="badge bg-blue-50 text-blue-600 text-sm py-1 px-3">💉 Vaccinated</span>}
-            {pet.neutered && <span className="badge bg-purple-50 text-purple-600 text-sm py-1 px-3">✂️ Neutered</span>}
+            {pet.vaccinated && (
+              <span className="badge bg-blue-50 text-blue-600 text-sm py-1 px-3 flex items-center gap-2">
+                <Syringe className="w-4 h-4" /> Vaccinated
+              </span>
+            )}
+            {pet.neutered && (
+              <span className="badge bg-purple-50 text-purple-600 text-sm py-1 px-3 flex items-center gap-2">
+                <Scissors className="w-4 h-4" /> Neutered
+              </span>
+            )}
           </div>
 
           {pet.status === 'Available' && (
             <>
-              <button onClick={() => setShowForm(!showForm)} className="btn-primary w-full mb-4">
-                📅 Schedule a Visit
+              <button onClick={() => setShowForm(!showForm)} className="btn-primary w-full mb-4 inline-flex items-center justify-center gap-2">
+                <CalendarCheck className="w-4 h-4" /> Schedule a Visit
               </button>
               <p className="text-xs text-gray-400 text-center">Pets cannot be purchased online. Visit in person to adopt.</p>
             </>

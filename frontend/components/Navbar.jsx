@@ -55,12 +55,12 @@ export default function Navbar() {
 
   return (
     <nav className="glass sticky top-0 z-50 border-b border-slate-200/50 bg-white/75 backdrop-blur-md transition-all duration-300">
-      <div className="w-full pl-6 sm:pl-10 lg:pl-16 pr-4 sm:pr-8 py-2 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-2">
+        <Link href="/" className="flex items-center gap-2.5 shrink-0">
           <img 
             src="/Assets/logo.png" 
             alt="Jully's Paw Logo" 
-            className="h-20 w-auto object-contain"
+            className="h-12 w-auto object-contain sm:h-14 lg:h-20"
           />
         </Link>
 
@@ -101,7 +101,7 @@ export default function Navbar() {
 
         {/* Mobile toggle */}
         <button 
-          className="md:hidden text-slate-600 hover:text-primary p-1 transition-colors" 
+          className="md:hidden flex h-10 w-10 items-center justify-center rounded-full text-slate-600 hover:text-primary hover:bg-slate-100 transition-colors" 
           onClick={() => setMenuOpen(!menuOpen)}
         >
           {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}

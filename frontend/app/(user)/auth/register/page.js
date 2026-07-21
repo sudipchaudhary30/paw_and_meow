@@ -1,21 +1,58 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authAPI } from '../../../../services/api';
 import { toast } from 'react-hot-toast';
+import { PawPrint } from 'lucide-react';
 
 export default function RegisterPage() {
   const router = useRouter();
   const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' });
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+    return () => script.remove();
+  }, []);
+
+  const handleGoogle = async (response) => {
+    try {
+      const { data } = await authAPI.googleLogin({ idToken: response.credential, fingerprint: typeof window !== 'undefined' ? window.navigator.userAgent : '' });
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      window.dispatchEvent(new Event('authUpdated'));
+      toast.success('Signed up with Google');
+      router.push('/');
+    } catch {
+      toast.error('Google sign-in failed.');
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.google) return;
+    window.google.accounts.id.initialize({
+      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
+      callback: handleGoogle
+    });
+    window.google.accounts.id.renderButton(document.getElementById('google-register-button'), {
+      theme: 'outline',
+      size: 'large',
+      width: '100%'
+    });
+  }, [handleGoogle]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (form.password !== form.confirm) { toast.error('Passwords do not match.'); return; }
     setLoading(true);
     try {
-      const { data } = await authAPI.register({ name: form.name, email: form.email, password: form.password });
+      const { data } = await authAPI.register({ name: form.name, email: form.email, password: form.password, captcha: 'passed' });
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       window.dispatchEvent(new Event('authUpdated'));
@@ -33,7 +70,9 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-10">
       <div className="bg-white rounded-2xl shadow-sm border p-8 w-full max-w-md">
         <div className="text-center mb-6">
-          <div className="text-4xl mb-2">🐾</div>
+          <div className="text-4xl mb-2 text-primary mx-auto inline-flex items-center justify-center rounded-full bg-primary/10 w-16 h-16">
+            <PawPrint className="w-8 h-8 text-primary" />
+          </div>
           <h1 className="text-2xl font-bold text-gray-800">Create Account</h1>
           <p className="text-gray-500 text-sm mt-1">Join PawHome and find your pet companion</p>
         </div>
@@ -57,6 +96,9 @@ export default function RegisterPage() {
           <button type="submit" disabled={loading} className="btn-primary w-full mt-2">
             {loading ? 'Creating account...' : 'Create Account'}
           </button>
+          <div className="pt-2">
+            <div id="google-register-button" className="w-full" />
+          </div>
         </form>
         <p className="text-center text-sm text-gray-500 mt-5">
           Already have an account?{' '}

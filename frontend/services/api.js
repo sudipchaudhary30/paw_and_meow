@@ -33,8 +33,12 @@ api.interceptors.response.use(
 export const authAPI = {
   register: (data) => api.post('/auth/register', data),
   login: (data) => api.post('/auth/login', data),
+  requestPasswordless: (data) => api.post('/auth/passwordless/request', data),
+  passwordlessLogin: (data) => api.post('/auth/passwordless/login', data),
+  googleLogin: (data) => api.post('/auth/google', data),
   getMe: () => api.get('/auth/me'),
   updateProfile: (data) => api.put('/auth/profile', data),
+  exportProfile: () => api.get('/auth/export'),
 };
 
 // Pets

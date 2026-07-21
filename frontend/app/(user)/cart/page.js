@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
+import { ShoppingCart, Package } from 'lucide-react';
 
 export default function CartPage() {
   const [cart, setCart] = useState([]);
@@ -30,7 +31,9 @@ export default function CartPage() {
   if (cart.length === 0) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-        <div className="text-6xl mb-4">🛒</div>
+        <div className="text-primary mb-4 inline-flex items-center justify-center rounded-full bg-primary/10 w-20 h-20 mx-auto">
+          <ShoppingCart className="w-10 h-10" />
+        </div>
         <h2 className="text-2xl font-bold text-gray-700 mb-3">Your cart is empty</h2>
         <p className="text-gray-500 mb-6">Add some products to get started.</p>
         <Link href="/products" className="btn-primary inline-block">Browse Products</Link>
@@ -46,7 +49,7 @@ export default function CartPage() {
           {cart.map(item => (
             <div key={item._id} className="card p-4 flex gap-4 items-center">
               <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                {item.imageUrl ? <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover rounded-lg" /> : <span className="text-2xl">📦</span>}
+                {item.imageUrl ? <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover rounded-lg" /> : <Package className="w-8 h-8 text-gray-400" />}
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-gray-800">{item.name}</h3>

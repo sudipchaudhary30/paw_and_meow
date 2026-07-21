@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { authAPI, visitAPI, orderAPI } from '../../../services/api';
 import { toast } from 'react-hot-toast';
+import { CalendarDays, Package, Download } from 'lucide-react';
 
 const statusColors = {
   Pending: 'bg-yellow-100 text-yellow-700',
@@ -30,6 +31,24 @@ export default function ProfilePage() {
     orderAPI.getMy().then(r => setOrders(r.data.orders || [])).catch(() => {});
   }, []);
 
+  const handleExport = async () => {
+    try {
+      const { data } = await authAPI.exportProfile();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `pawhome-profile-${user._id}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.success('Profile export downloaded.');
+    } catch {
+      toast.error('Export failed.');
+    }
+  };
+
   const cancelVisit = async (id) => {
     try {
       await visitAPI.cancel(id);
@@ -49,16 +68,19 @@ export default function ProfilePage() {
         <div className="w-14 h-14 bg-primary rounded-full flex items-center justify-center text-white text-2xl font-bold">
           {user.name?.[0]?.toUpperCase()}
         </div>
-        <div>
+        <div className="flex-1">
           <h1 className="text-xl font-bold text-gray-800">{user.name}</h1>
           <p className="text-gray-500 text-sm">{user.email}</p>
           <span className={`badge mt-1 ${user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-green-100 text-green-700'}`}>{user.role}</span>
         </div>
+        <button onClick={handleExport} className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">
+          <Download className="h-4 w-4" /> Export profile
+        </button>
       </div>
 
       {/* Tabs */}
       <div className="flex border-b mb-6">
-        {[['visits', '📅 Visit Requests'], ['orders', '📦 Orders']].map(([tab, label]) => (
+        {[['visits', <><CalendarDays className="inline-block w-4 h-4 mr-2" />Visit Requests</>], ['orders', <><Package className="inline-block w-4 h-4 mr-2" />Orders</>]].map(([tab, label]) => (
           <button key={tab} onClick={() => setActiveTab(tab)}
             className={`px-5 py-3 text-sm font-medium border-b-2 transition ${activeTab === tab ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
             {label}

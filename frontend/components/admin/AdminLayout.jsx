@@ -20,25 +20,29 @@ function isAdminAuthed() {
 
 export default function AdminLayout({ children, title }) {
   const router = useRouter();
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return isAdminAuthed();
+    }
+    return false;
+  });
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const redirectToLogin = () => {
+    if (!isAdminAuthed()) {
       setReady(false);
-      router.push('/auth/login');
-    };
+      router.replace('/auth/login');
+    } else {
+      setReady(true);
+    }
 
     const syncAuth = () => {
       if (isAdminAuthed()) {
         setReady(true);
       } else {
-        redirectToLogin();
+        setReady(false);
+        router.replace('/auth/login');
       }
     };
-
-    syncAuth();
 
     const handleStorage = (event) => {
       if (!event.key || ['adminToken', 'token', 'adminUser', 'user'].includes(event.key)) {

@@ -12,7 +12,7 @@ export default function PetCard({ pet }) {
     <div className="card group hover:shadow-md transition-shadow duration-200">
       
       {/* Image container */}
-      <div className="h-48 bg-gradient-to-br from-petbg to-[#DFE7F5] flex items-center justify-center overflow-hidden relative">
+      <div className="h-44 sm:h-48 bg-gradient-to-br from-petbg to-[#DFE7F5] flex items-center justify-center overflow-hidden relative">
         {pet.imageUrl ? (
           <img 
             src={pet.imageUrl} 
@@ -30,7 +30,7 @@ export default function PetCard({ pet }) {
       </div>
 
       {/* Details */}
-      <div className="p-5">
+      <div className="p-4 sm:p-5">
         <div className="flex justify-between items-center mb-2">
           <h3 className="font-bold text-slate-800 text-base group-hover:text-primary transition-colors">{pet.name}</h3>
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-[10px] font-bold border ${statusColors[pet.status] || 'bg-slate-100 text-slate-600 border-slate-200'}`}>

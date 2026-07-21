@@ -1,10 +1,10 @@
 const express = require('express');
-const upload = require('../middleware/uploadMiddleware');
+const { upload, verifyFileMagicBytes } = require('../middleware/uploadMiddleware');
 const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router.post('/', protect, upload.single('image'), (req, res) => {
+router.post('/', protect, upload.single('image'), verifyFileMagicBytes, (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'Please upload an image file.' });
@@ -16,7 +16,7 @@ router.post('/', protect, upload.single('image'), (req, res) => {
     const imageUrl = `${protocol}://${host}/uploads/${req.file.filename}`;
 
     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-    res.status(200).json({ 
+    res.status(200).json({
       message: 'Image uploaded successfully.',
       url: imageUrl
     });
@@ -26,3 +26,4 @@ router.post('/', protect, upload.single('image'), (req, res) => {
 });
 
 module.exports = router;
+

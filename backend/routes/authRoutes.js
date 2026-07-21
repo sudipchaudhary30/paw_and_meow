@@ -1,6 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { register, login, getMe, updateProfile, exportProfile, importProfile, requestPasswordless, passwordlessLogin, googleLogin } = require('../controllers/authController');
+const { register, login, getMe, updateProfile, exportProfile, importProfile, requestPasswordless, passwordlessLogin, googleLogin, requestEmailVerification, verifyEmail, clearSession } = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
 const { handleValidation } = require('../middleware/validateInput');
 
@@ -36,6 +36,7 @@ router.post('/google', [
   handleValidation
 ], googleLogin);
 
+// Authenticated profile routes
 router.get('/me', protect, getMe);
 router.put('/profile', protect, [
   body('name').optional().trim().notEmpty().isLength({ max: 50 }),
@@ -43,6 +44,16 @@ router.put('/profile', protect, [
 ], updateProfile);
 router.get('/export', protect, exportProfile);
 router.post('/import', protect, importProfile);
+
+// Email verification routes
+router.post('/email/verify/request', protect, requestEmailVerification);
+router.post('/email/verify/confirm', protect, [
+  body('code').notEmpty().withMessage('Verification code is required'),
+  handleValidation
+], verifyEmail);
+
+// Session logout
+router.post('/logout', protect, clearSession);
 
 module.exports = router;
 

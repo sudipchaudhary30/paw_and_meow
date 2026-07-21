@@ -6,25 +6,21 @@ const placeOrder = async (req, res) => {
   try {
     const { items, shippingAddress, paymentMethod, notes } = req.body;
 
-    // Validate products and calculate total
     let totalAmount = 0;
-    const enrichedItems = await Promise.all(items.map(async (item) => {
+    const enrichedItems = [];
+
+    for (const item of items) {
       const product = await Product.findById(item.productId);
       if (!product || !product.isActive) throw new Error(`Product not available: ${item.productId}`);
       if (product.stock < item.quantity) throw new Error(`Insufficient stock for: ${product.name}`);
       totalAmount += product.price * item.quantity;
-      return {
+      enrichedItems.push({
         product: product._id,
         name: product.name,
         price: product.price,
         quantity: item.quantity
-      };
-    }));
-
-    // Deduct stock
-    await Promise.all(enrichedItems.map(item =>
-      Product.findByIdAndUpdate(item.product, { $inc: { stock: -item.quantity } })
-    ));
+      });
+    }
 
     const order = await Order.create({
       user: req.user._id,
@@ -34,6 +30,15 @@ const placeOrder = async (req, res) => {
       paymentMethod,
       notes
     });
+
+    try {
+      await Promise.all(enrichedItems.map(item =>
+        Product.findByIdAndUpdate(item.product, { $inc: { stock: -item.quantity } })
+      ));
+    } catch (stockError) {
+      await Order.findByIdAndDelete(order._id);
+      throw new Error('Stock update failed, order rolled back.');
+    }
 
     await createLog({ user: req.user._id, action: 'PLACE_ORDER', resource: 'Order', resourceId: order._id, status: 'success', details: { totalAmount }, ip: req.ip });
     res.status(201).json({ order });

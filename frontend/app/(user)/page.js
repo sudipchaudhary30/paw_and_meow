@@ -26,29 +26,29 @@ export default function HomePage() {
   return (
     <div>
       {/* Hero Section with Image Background */}
-      <section className="relative overflow-hidden bg-[#F1F5F9] py-20 sm:py-32 px-4 sm:px-6 lg:px-8 border-b border-slate-100 min-h-[550px] flex items-center">
+      <section className="relative overflow-hidden bg-[#F1F5F9] py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 border-b border-slate-100 min-h-[460px] sm:min-h-[550px] flex items-center">
         {/* Background Image Layer */}
         <div 
           className="absolute inset-0 bg-[url('/hero-bg.png')] bg-no-repeat bg-cover bg-[position:75%_center] md:bg-[position:right_center] opacity-90 z-0"
         />
         
         {/* Content Container */}
-        <div className="w-full pl-6 sm:pl-10 lg:pl-16 relative z-20">
+        <div className="w-full max-w-6xl mx-auto px-0 sm:px-2 lg:px-4 relative z-20">
           <div className="max-w-xl text-left">
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-bold bg-primary/10 text-primary mb-6">
               <PawPrint className="w-4 h-4" /> Welcome to PawHome
             </span>
-            <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-900 leading-tight mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-tight mb-6">
               Where Happy Tails Find Their <span className="bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">Forever Homes</span>
             </h1>
             <p className="text-lg sm:text-xl text-slate-700 mb-8 max-w-lg leading-relaxed">
               Explore friendly adoptable pets waiting for your love, schedule visits securely, and find the best accessories and food for your companions.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-start">
-              <Link href="/pets" className="btn-primary">
+            <div className="flex flex-col sm:flex-row gap-3 justify-start">
+              <Link href="/pets" className="btn-primary w-full sm:w-auto text-center">
                 Browse Pets
               </Link>
-              <Link href="/products" className="btn-outline">
+              <Link href="/products" className="btn-outline w-full sm:w-auto text-center">
                 Shop Accessories
               </Link>
             </div>
@@ -57,8 +57,8 @@ export default function HomePage() {
       </section>
 
       {/* Stats Section */}
-      <section className="bg-white py-10 border-b border-slate-100">
-        <div className="max-w-5xl mx-auto grid grid-cols-3 gap-4 sm:gap-6 text-center">
+      <section className="bg-white py-8 sm:py-10 border-b border-slate-100">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-center">
           {[
             { icon: <Heart className="w-8 h-8 text-red-500 mx-auto" />, val: stats.petsAdopted, label: 'Pets Adopted' },
             { icon: <ShoppingBag className="w-8 h-8 text-primary mx-auto" />, val: stats.productsSold, label: 'Products Sold' },
@@ -74,7 +74,7 @@ export default function HomePage() {
       </section>
 
       {/* Featured Pets Section */}
-      <section className="max-w-6xl mx-auto px-4 py-16">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
           <div>
             <span className="text-xs font-bold text-accent bg-accent/10 px-3 py-1 rounded-full uppercase tracking-wider">Meet Our Friends</span>
@@ -97,8 +97,8 @@ export default function HomePage() {
       </section>
 
       {/* Featured Products Section */}
-      <section className="bg-slate-50 border-t border-b border-slate-100 py-16">
-        <div className="max-w-6xl mx-auto px-4">
+      <section className="bg-slate-50 border-t border-b border-slate-100 py-12 sm:py-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
             <div>
               <span className="text-xs font-bold text-primary bg-primary/10 px-3 py-1 rounded-full uppercase tracking-wider">Pet Supplies</span>
@@ -122,8 +122,8 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="max-w-5xl mx-auto px-4 py-16">
-        <div className="bg-gradient-to-br from-accent/10 via-accent-light/30 to-primary/5 rounded-xl p-8 sm:p-12 text-center border border-slate-200 relative overflow-hidden">
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div className="bg-gradient-to-br from-accent/10 via-accent-light/30 to-primary/5 rounded-xl p-6 sm:p-8 lg:p-12 text-center border border-slate-200 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-full blur-3xl" />
           <h2 className="text-3xl font-bold text-slate-900 mb-3">Ready to Start a Story?</h2>
           <p className="text-slate-600 mb-8 max-w-md mx-auto leading-relaxed">

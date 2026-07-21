@@ -57,11 +57,16 @@ export default function VisitsPage() {
         <div className="card">
           {loading ? <div className="p-10 text-center text-gray-400">Loading...</div> : (
             <Table
-              columns={['User', 'Pet', 'Visit Date & Time', 'Status', 'Action']}
+              columns={['Requested By', 'Pet', 'Visit Date & Time', 'Status', 'Action']}
               data={visits}
               renderRow={(v) => (
                 <tr key={v._id}>
-                  <td className="td"><div className="font-medium">{v.user?.name}</div><div className="text-xs text-gray-400">{v.user?.email}</div></td>
+                  <td className="td">
+                    <div className="font-medium">{v.user?.name || 'Unknown requester'}</div>
+                    <div className="text-xs text-gray-400">{v.user?.email || 'No email provided'}</div>
+                    {v.user?.phone && <div className="text-xs text-gray-400">{v.user.phone}</div>}
+                    {v.user?._id && <div className="text-[11px] text-gray-400 mt-1">ID: {v.user._id}</div>}
+                  </td>
                   <td className="td">{v.pet?.name} <span className="text-gray-400">({v.pet?.species})</span></td>
                   <td className="td">{new Date(v.visitDate).toLocaleDateString()}<br/><span className="text-xs text-gray-400">{v.visitTime}</span></td>
                   <td className="td"><span className={'badge ' + (statusColor[v.status] || '')}>{v.status}</span></td>
@@ -81,11 +86,13 @@ export default function VisitsPage() {
               <button onClick={() => setSelected(null)} className="text-slate-400 hover:text-slate-700 transition-colors"><X className="w-5 h-5"/></button>
             </div>
             <div className="p-5 text-sm text-gray-600 space-y-2 border-b">
-              <p><strong>User:</strong> {selected.user?.name} ({selected.user?.email})</p>
+              <p><strong>Requested by:</strong> {selected.user?.name || 'Unknown requester'}</p>
+              <p><strong>Email:</strong> {selected.user?.email || 'No email provided'}</p>
+              {selected.user?.phone && <p><strong>Phone:</strong> {selected.user.phone}</p>}
+              {selected.user?._id && <p><strong>User ID:</strong> {selected.user._id}</p>}
               <p><strong>Pet:</strong> {selected.pet?.name}</p>
               <p><strong>Date:</strong> {new Date(selected.visitDate).toLocaleDateString()} at {selected.visitTime}</p>
               {selected.message && <p><strong>Message:</strong> {selected.message}</p>}
-              {selected.user?.phone && <p><strong>Phone:</strong> {selected.user.phone}</p>}
             </div>
             <form onSubmit={handleUpdate} className="p-5 space-y-4">
               <div>

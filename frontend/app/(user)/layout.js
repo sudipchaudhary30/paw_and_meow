@@ -11,9 +11,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>
+      <body className="min-h-screen overflow-x-hidden bg-[#F8FAFC] text-slate-800">
         <Navbar />
-        <main className="min-h-screen">{children}</main>
+        <main className="min-h-screen w-full overflow-x-hidden">{children}</main>
         <Footer />
         <Toaster position="top-right" />
       </body>
