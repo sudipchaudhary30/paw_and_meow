@@ -3,6 +3,7 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/db');
 
@@ -48,9 +49,10 @@ const authLimiter = rateLimit({
 app.use('/api/', limiter);
 app.use('/api/auth/', authLimiter);
 
-// Body Parsing
+// Body & Cookie Parsing
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // HTTP Request Logging
 app.use(morgan('combined'));

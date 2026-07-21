@@ -1,6 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { register, login, getMe, updateProfile } = require('../controllers/authController');
+const { register, login, getMe, updateProfile, exportProfile, importProfile, requestPasswordless, passwordlessLogin, googleLogin } = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
 const { handleValidation } = require('../middleware/validateInput');
 
@@ -20,11 +20,29 @@ router.post('/login', [
   handleValidation
 ], login);
 
+router.post('/passwordless/request', [
+  body('email').isEmail().withMessage('Valid email required').normalizeEmail(),
+  handleValidation
+], requestPasswordless);
+
+router.post('/passwordless/login', [
+  body('email').isEmail().withMessage('Valid email required').normalizeEmail(),
+  body('code').notEmpty().withMessage('Code is required'),
+  handleValidation
+], passwordlessLogin);
+
+router.post('/google', [
+  body('idToken').notEmpty().withMessage('Google token is required'),
+  handleValidation
+], googleLogin);
+
 router.get('/me', protect, getMe);
 router.put('/profile', protect, [
   body('name').optional().trim().notEmpty().isLength({ max: 50 }),
   handleValidation
 ], updateProfile);
+router.get('/export', protect, exportProfile);
+router.post('/import', protect, importProfile);
 
 module.exports = router;
 
