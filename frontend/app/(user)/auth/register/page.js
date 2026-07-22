@@ -88,9 +88,9 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-10">
       <div className="bg-white rounded-2xl shadow-sm border p-8 w-full max-w-md">
         <div className="text-center mb-6">
-          <div className="text-4xl mb-2 text-primary mx-auto inline-flex items-center justify-center rounded-full bg-primary/10 w-16 h-16">
-            <PawPrint className="w-8 h-8 text-primary" />
-          </div>
+          <Link href="/" className="inline-block">
+            <img src="/Assets/logo.png" alt="PawHome Logo" className="h-16 w-auto mx-auto mb-3 object-contain hover:opacity-90 transition-opacity" />
+          </Link>
           <h1 className="text-2xl font-bold text-gray-800">Create Account</h1>
           <p className="text-gray-500 text-sm mt-1">Join PawHome and find your pet companion</p>
         </div>

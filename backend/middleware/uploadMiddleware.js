@@ -41,6 +41,14 @@ function isValidImageBuffer(buffer) {
   return Object.values(ALLOWED_MAGIC_BYTES).some(sig => matchesMagicBytes(buffer, sig));
 }
 
+// BEFORE FIX (Vulnerable Code - Finding 9):
+// const fileFilter = (req, file, cb) => {
+//   const isImage = file.mimetype.startsWith('image/');
+//   cb(null, isImage);
+// };
+// ^ Only checked user-controlled MIME header — attacker spoofs Content-Type: image/jpeg
+// ^ to upload PHP shell disguised as avatar.jpg → Remote Code Execution risk
+// AFTER FIX (Remediated Code - Layer 1): Extension + MIME type validation below
 // File filter: validates MIME type AND file extension (Layer 1 check)
 const fileFilter = (req, file, cb) => {
   const allowedMimes = /image\/(jpeg|jpg|png|gif|webp)/;

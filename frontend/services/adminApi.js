@@ -5,14 +5,42 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 const adminApi = axios.create({
   baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
+  withCredentials: true,
 });
 
-adminApi.interceptors.request.use((config) => {
+function getCookie(name) {
+  if (typeof document === 'undefined') return null;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+}
+
+adminApi.interceptors.request.use(async (config) => {
   if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('token') || localStorage.getItem('adminToken');
+    const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
     if (token) config.headers.Authorization = `Bearer ${token}`;
     config.headers['X-Session-Fingerprint'] = window.navigator.userAgent;
   }
+
+  // Double-Submit Cookie CSRF injection
+  const method = config.method?.toLowerCase();
+  const safeMethods = ['get', 'head', 'options'];
+  if (!safeMethods.includes(method)) {
+    let csrfToken = getCookie('csrf_token');
+    if (!csrfToken) {
+      try {
+        const res = await axios.get(`${API_URL}/csrf-token`, { withCredentials: true });
+        csrfToken = res.data.csrfToken;
+      } catch (err) {
+        console.error('Failed to initialize CSRF token for admin:', err);
+      }
+    }
+    if (csrfToken) {
+      config.headers['X-CSRF-Token'] = csrfToken;
+    }
+  }
+
   return config;
 });
 
@@ -69,7 +97,9 @@ export const adminBlogAPI = {
 };
 
 export const adminUploadAPI = {
-  uploadImage: (formData) => adminApi.post('/upload', formData),
+  uploadImage: (formData) => adminApi.post('/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
 };
 
 export default adminApi;

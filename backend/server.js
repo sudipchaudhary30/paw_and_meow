@@ -57,12 +57,14 @@ app.use((req, res, next) => {
   next();
 });
 
-// Rate Limiting 
+// Rate Limiting — skip entirely in development to avoid 429s during hot-reload
+const isDev = process.env.NODE_ENV !== 'production';
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,  // 15 minutes
-  max: 100,
+  max: 500,
   message: { error: 'Too many requests, please try again later.' },
-  skip: (req) => isIpAllowlisted(req),
+  skip: (req) => isDev || isIpAllowlisted(req),
   handler: async (req, res, next, options) => {
     const clientIp = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     await createLog({
@@ -77,9 +79,9 @@ const limiter = rateLimit({
 });
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 20,
   message: { error: 'Too many auth attempts, please try again later.' },
-  skip: (req) => isIpAllowlisted(req),
+  skip: (req) => isDev || isIpAllowlisted(req),
   handler: async (req, res, next, options) => {
     const clientIp = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     await createLog({
@@ -94,9 +96,9 @@ const authLimiter = rateLimit({
 });
 const uploadLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,  // 1 hour window
-  max: 20,
+  max: 50,
   message: { error: 'Too many file uploads, please wait before trying again.' },
-  skip: (req) => isIpAllowlisted(req),
+  skip: (req) => isDev || isIpAllowlisted(req),
   handler: async (req, res, next, options) => {
     const clientIp = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     await createLog({

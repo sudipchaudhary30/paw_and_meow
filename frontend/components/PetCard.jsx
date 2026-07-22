@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { PawPrint, ShieldCheck, Check } from 'lucide-react';
+import { PawPrint, Syringe, Scissors } from 'lucide-react';
 
 const statusColors = {
   Available: 'bg-emerald-50 text-emerald-700 border-emerald-100',
@@ -48,16 +48,16 @@ export default function PetCard({ pet }) {
           </p>
         )}
 
-        {/* Vaccines / Neutered */}
+        {/* Health indicators */}
         <div className="flex flex-wrap gap-1.5 mb-4">
           {pet.vaccinated && (
-            <span className="badge bg-blue-50 text-blue-600 border border-blue-100 text-[10px] py-0.5 flex items-center gap-1">
-              <ShieldCheck className="w-3 h-3 text-blue-500" /> Vaccinated
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100 text-[10px] font-semibold">
+              <Syringe className="w-3 h-3" /> Vaccinated
             </span>
           )}
           {pet.neutered && (
-            <span className="badge bg-purple-50 text-purple-600 border border-purple-100 text-[10px] py-0.5 flex items-center gap-1">
-              <Check className="w-3 h-3 text-purple-500" /> Neutered
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-50 text-violet-700 border border-violet-100 text-[10px] font-semibold">
+              <Scissors className="w-3 h-3" /> Neutered
             </span>
           )}
         </div>

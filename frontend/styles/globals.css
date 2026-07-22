@@ -34,7 +34,7 @@
     @apply bg-accent text-white px-5 py-2.5 rounded-lg font-semibold shadow-sm hover:bg-accent-dark transition-colors duration-150;
   }
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-slate-100/80 overflow-hidden hover:shadow-md hover:border-primary/20 transition-all duration-300;
+    @apply bg-white rounded-[24px] shadow-sm border border-slate-100/80 overflow-hidden hover:shadow-md hover:border-primary/20 transition-all duration-300;
   }
   .input {
     @apply w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm transition-all duration-200 bg-white/50 backdrop-blur-sm;

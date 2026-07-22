@@ -4,7 +4,16 @@ const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router.post('/', protect, upload.single('image'), verifyFileMagicBytes, (req, res) => {
+const handleUploadMiddleware = (req, res, next) => {
+  upload.single('image')(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ error: err.message || 'File upload failed.' });
+    }
+    next();
+  });
+};
+
+router.post('/', protect, handleUploadMiddleware, verifyFileMagicBytes, (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'Please upload an image file.' });

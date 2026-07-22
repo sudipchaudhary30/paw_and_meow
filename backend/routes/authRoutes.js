@@ -9,6 +9,10 @@ const router = express.Router();
 router.post('/register', [
   body('name').trim().notEmpty().withMessage('Name is required').isLength({ max: 50 }),
   body('email').isEmail().withMessage('Valid email required').normalizeEmail(),
+  // BEFORE FIX (Vulnerable Code - Finding 5):
+  // body('password').isLength({ min: 6 })
+  // ^ Only minimum length enforced — simple passwords like '123456' allowed
+  // AFTER FIX (Remediated Code): Strict complexity regex enforced
   body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
     .matches(/^(?=.*[A-Z])(?=.*\d)/).withMessage('Password must contain uppercase letter and number'),
   handleValidation

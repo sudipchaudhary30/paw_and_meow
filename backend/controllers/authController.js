@@ -68,6 +68,10 @@ const register = async (req, res) => {
       return res.status(409).json({ error: 'Email already registered.' });
     }
 
+    // BEFORE FIX (Vulnerable Code - Finding 1):
+    // const user = await User.create({ name, email, password, role: req.body.role });
+    // ^ No role validation — attacker could self-assign admin by sending { role: 'admin' }
+    // AFTER FIX (Remediated Code): Enforced role restriction in authController.js
     // Prevent self-assigning admin role unless no users exist
     const userCount = await User.countDocuments();
     const assignedRole = (role === 'admin' && userCount === 0) ? 'admin' : 'user';
@@ -106,6 +110,12 @@ const login = async (req, res) => {
       return res.status(423).json({ error: 'Account temporarily locked. Try again later.' });
     }
 
+    // BEFORE FIX (Vulnerable Code - Finding 2):
+    // if (!user || !(await user.comparePassword(password))) {
+    //   return res.status(401).json({ error: 'Invalid credentials' });
+    // }
+    // ^ No lockout tracking — unlimited brute-force attempts allowed
+    // AFTER FIX (Remediated Code): Account lockout & attempt tracking
     if (!user || !(await user.comparePassword(password))) {
       user.failedLoginAttempts = (user.failedLoginAttempts || 0) + 1;
       let locked = false;
@@ -146,8 +156,14 @@ const login = async (req, res) => {
     await user.save();
 
     const token = generateToken(user._id, user.role, { fingerprint: fingerprint || null });
+    // BEFORE FIX (Vulnerable Code - Finding 6):
+    // await createLog({ action: 'LOGIN', details: req.body }); // Capturing raw password in logs
+    // AFTER FIX (Remediated Code): Sanitized audit log entry
     await createLog({ user: user._id, email, action: 'LOGIN', status: 'success', ip: req.ip });
 
+    // BEFORE FIX (Vulnerable Code - Finding 3):
+    // res.json({ token, user }); // Token returned in JSON body only — forced localStorage storage
+    // AFTER FIX (Remediated Code): Token bound to HttpOnly, Secure, SameSite=Strict Cookie
     res.cookie('token', token, cookieOptions);
     res.json({ token, user });
   } catch (error) {
@@ -251,6 +267,12 @@ const getMe = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   try {
+    // BEFORE FIX (Vulnerable Code - Finding 4):
+    // const user = await User.findByIdAndUpdate(req.user._id, req.body, { new: true });
+    // ^ Allowed mass assignment: attackers could pass { role: 'admin', isActive: true }
+    // AFTER FIX (Remediated Code): Whitelisted property extraction only
+
+
     const { name, phone, address } = req.body;
     const user = await User.findByIdAndUpdate(
       req.user._id,

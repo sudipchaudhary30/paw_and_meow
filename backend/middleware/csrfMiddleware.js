@@ -30,6 +30,11 @@ const issueCsrfToken = (req, res) => {
  * Skips GET, HEAD, OPTIONS (safe methods).
  * Skips Google OAuth route (uses its own ID-token verification).
  */
+// BEFORE FIX (Vulnerable Code - Finding 7):
+// app.use('/api/auth', authRoutes);
+// ^ No CSRF token validation on any state-changing endpoints (POST, PUT, DELETE)
+// ^ Attacker could forge requests from a malicious site while victim is logged in
+// AFTER FIX (Remediated Code): Double-Submit Cookie pattern enforced below
 const verifyCsrf = (req, res, next) => {
   const SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS'];
   const SKIP_PATHS = ['/api/auth/google']; // OAuth bypasses CSRF token check

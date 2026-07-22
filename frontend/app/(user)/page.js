@@ -25,33 +25,43 @@ export default function HomePage() {
 
   return (
     <div>
-      {/* Hero Section with Image Background */}
-      <section className="relative overflow-hidden bg-[#F1F5F9] py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 border-b border-slate-100 min-h-[460px] sm:min-h-[550px] flex items-center">
-        {/* Background Image Layer */}
-        <div 
-          className="absolute inset-0 bg-[url('/hero-bg.png')] bg-no-repeat bg-cover bg-[position:75%_center] md:bg-[position:right_center] opacity-90 z-0"
-        />
-        
-        {/* Content Container */}
-        <div className="w-full max-w-6xl mx-auto px-0 sm:px-2 lg:px-4 relative z-20">
-          <div className="max-w-xl text-left">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-bold bg-primary/10 text-primary mb-6">
-              <PawPrint className="w-4 h-4" /> Welcome to PawHome
-            </span>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-tight mb-6">
-              Where Happy Tails Find Their <span className="bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">Forever Homes</span>
-            </h1>
-            <p className="text-lg sm:text-xl text-slate-700 mb-8 max-w-lg leading-relaxed">
-              Explore friendly adoptable pets waiting for your love, schedule visits securely, and find the best accessories and food for your companions.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-start">
-              <Link href="/pets" className="btn-primary w-full sm:w-auto text-center">
-                Browse Pets
-              </Link>
-              <Link href="/products" className="btn-outline w-full sm:w-auto text-center">
-                Shop Accessories
-              </Link>
+      {/* Hero Section */}
+      {/* Mobile: stacked grid (text + image card). Desktop: full-width bg image hero */}
+      <section className="relative overflow-hidden bg-[#F1F5F9] border-b border-slate-200/60">
+
+        {/* Desktop-only: background image without overlay */}
+        <div className="hidden md:block absolute inset-0 bg-[url('/hero-bg.png')] bg-no-repeat bg-cover bg-[position:right_center] z-0" />
+
+        <div className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-28">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
+
+            {/* Text Content Column */}
+            <div className="md:col-span-7 lg:col-span-6 text-left">
+
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.15] mb-5">
+                Adopt a companion, <br className="hidden sm:inline" />
+                <span className="text-primary">bring home real love.</span>
+              </h1>
+              <p className="text-base sm:text-lg text-slate-600 mb-7 leading-relaxed max-w-xl">
+                Browse rescue pets looking for a family. Schedule shelter visits online, adopt responsibly, and get quality food & supplies for your pets.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3.5 justify-start w-full sm:w-auto">
+                <Link href="/pets" className="btn-primary w-full sm:w-auto text-center py-3 px-6 text-base font-bold shadow-md hover:shadow-lg transition-all duration-200">
+                  Find a Pet to Adopt
+                </Link>
+                <Link href="/products" className="btn-outline w-full sm:w-auto text-center py-3 px-6 text-base font-semibold bg-white border-slate-300 text-slate-700 hover:bg-slate-50 transition-all duration-200">
+                  Shop Supplies
+                </Link>
+              </div>
             </div>
+
+            {/* Hero Image Card — visible on mobile only, hidden on desktop (bg image takes over) */}
+            <div className="md:hidden relative w-full h-[260px] sm:h-[340px] rounded-3xl overflow-hidden shadow-xl border border-slate-200/50">
+              <div
+                className="absolute inset-0 bg-[url('/hero-bg.png')] bg-no-repeat bg-cover bg-center transition-transform duration-500 hover:scale-105"
+              />
+            </div>
+
           </div>
         </div>
       </section>
@@ -85,11 +95,11 @@ export default function HomePage() {
             View all pets →
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 [&_.card]:rounded-xl">
           {pets.length > 0 ? (
             pets.map(pet => <PetCard key={pet._id} pet={pet} />)
           ) : (
-            <p className="col-span-4 text-center text-slate-400 py-16 bg-white rounded-3xl border border-slate-100">
+            <p className="col-span-4 text-center text-slate-400 py-16 bg-white rounded-xl border border-slate-100">
               No pets available right now. Check back soon!
             </p>
           )}

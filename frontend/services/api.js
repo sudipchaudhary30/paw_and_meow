@@ -112,7 +112,9 @@ export const orderAPI = {
 
 // Image Upload
 export const uploadAPI = {
-  uploadImage: (formData) => api.post('/upload', formData),
+  uploadImage: (formData) => api.post('/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
 };
 
 export default api;

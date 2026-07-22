@@ -20,14 +20,11 @@ function isAdminAuthed() {
 
 export default function AdminLayout({ children, title }) {
   const router = useRouter();
-  const [ready, setReady] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return isAdminAuthed();
-    }
-    return false;
-  });
+  const [mounted, setMounted] = useState(false);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     if (!isAdminAuthed()) {
       setReady(false);
       router.replace('/auth/login');
@@ -58,7 +55,7 @@ export default function AdminLayout({ children, title }) {
     };
   }, [router]);
 
-  if (!ready) return (
+  if (!mounted || !ready) return (
     <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
       <div className="text-slate-400 text-sm font-semibold">Verifying access...</div>
     </div>
