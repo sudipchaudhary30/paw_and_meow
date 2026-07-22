@@ -7,6 +7,17 @@ const User = require('../models/User');
  * previously issued token. We re-validate token validity, check the active status and role in 
  * the database, and verify session fingerprint on every request.
  */
+const protect = async (req, res, next) => {
+  try {
+    let token = req.cookies?.token;
+    const authHeader = req.headers.authorization;
+    if (!token && authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1];
+    }
+
+    if (!token) {
+      return res.status(401).json({ error: 'No authentication token provided. Access denied.' });
+    }
 
     const decoded = verifyToken(token);
     const fingerprint = req.headers['x-session-fingerprint'] || req.headers['user-agent'] || req.body?.fingerprint;
@@ -30,13 +41,6 @@ const User = require('../models/User');
       return res.status(401).json({ error: 'Session fingerprint mismatch. Re-authentication forced.' });
     }
 
-    req.user = user;
-    next();
-  } catch (error) {
-    res.clearCookie('token');
-    return res.status(401).json({ error: 'Invalid or expired token.' });
-  }
-};
 
 module.exports = { protect };
 
