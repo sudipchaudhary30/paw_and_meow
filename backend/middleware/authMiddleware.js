@@ -41,6 +41,13 @@ const protect = async (req, res, next) => {
       return res.status(401).json({ error: 'Session fingerprint mismatch. Re-authentication forced.' });
     }
 
+    req.user = user;
+    next();
+  } catch (error) {
+    res.clearCookie('token');
+    return res.status(401).json({ error: 'Invalid or expired token.' });
+  }
+};
 
 module.exports = { protect };
 
