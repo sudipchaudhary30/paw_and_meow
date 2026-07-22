@@ -59,6 +59,16 @@ module.exports = router;
 
 // Admin user management routes
 const { requireRole } = require('../middleware/roleMiddleware');
+const { enforceIpAllowlist } = require('../middleware/ipAllowlistMiddleware');
+
+router.get('/admin/diagnostics', protect, requireRole('admin'), enforceIpAllowlist, (req, res) => {
+  res.json({
+    status: 'secure',
+    systemTime: new Date().toISOString(),
+    allowedIps: process.env.ADMIN_ALLOWED_IPS || 'none configured',
+    message: 'Access granted via IP allowlist verification.'
+  });
+});
 
 router.get('/users', protect, requireRole('admin'), async (req, res) => {
   try {

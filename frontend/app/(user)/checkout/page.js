@@ -7,7 +7,7 @@ import { toast } from 'react-hot-toast';
 export default function CheckoutPage() {
   const router = useRouter();
   const [cart, setCart] = useState([]);
-  const [form, setForm] = useState({ fullName: '', address: '', city: '', postalCode: '', paymentMethod: 'Cash on Delivery', notes: '' });
+  const [form, setForm] = useState({ fullName: '', address: '', city: '', postalCode: '', paymentMethod: 'eSewa', notes: '' });
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function CheckoutPage() {
 
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     setForm(f => ({ ...f, fullName: user.name || '' }));
-  }, []);
+  }, [router]);
 
   const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
@@ -27,12 +27,26 @@ export default function CheckoutPage() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await orderAPI.place({
+      const res = await orderAPI.place({
         items: cart.map(i => ({ productId: i._id, quantity: i.quantity })),
         shippingAddress: { fullName: form.fullName, address: form.address, city: form.city, postalCode: form.postalCode },
         paymentMethod: form.paymentMethod,
         notes: form.notes
       });
+
+      if (form.paymentMethod === 'eSewa' && res.data?.esewaForm) {
+        toast.loading('Redirecting to eSewa Payment Gateway...');
+        const { esewaUrl, ...params } = res.data.esewaForm;
+        
+        const queryParams = new URLSearchParams();
+        Object.keys(params).forEach(key => {
+          queryParams.set(key, params[key]);
+        });
+
+        router.push(`/payment/esewa/gateway?${queryParams.toString()}`);
+        return;
+      }
+
       localStorage.removeItem('cart');
       toast.success('Order placed successfully!');
       router.push('/profile');
@@ -74,13 +88,20 @@ export default function CheckoutPage() {
 
             <div className="card p-6">
               <h2 className="font-bold text-gray-700 mb-4">Payment Method</h2>
-              <div className="space-y-2">
-                {['Cash on Delivery', 'eSewa', 'Khalti'].map(method => (
-                  <label key={method} className="flex items-center gap-3 cursor-pointer p-3 border rounded-lg hover:bg-gray-50">
-                    <input type="radio" name="payment" value={method}
-                      checked={form.paymentMethod === method}
-                      onChange={() => setForm({ ...form, paymentMethod: method })} />
-                    <span className="font-medium text-gray-700">{method}</span>
+              <div className="space-y-3">
+                {[
+                  { id: 'eSewa', label: 'eSewa Mobile Wallet', badge: 'Recommended', color: 'text-green-600 font-semibold' },
+                  { id: 'Cash on Delivery', label: 'Cash on Delivery', badge: 'Pay at Doorstep', color: 'text-gray-700' }
+                ].map(method => (
+                  <label key={method.id} className={`flex items-center justify-between cursor-pointer p-4 border rounded-xl transition ${form.paymentMethod === method.id ? 'border-green-500 bg-green-50/40 shadow-sm' : 'hover:bg-gray-50'}`}>
+                    <div className="flex items-center gap-3">
+                      <input type="radio" name="payment" value={method.id}
+                        checked={form.paymentMethod === method.id}
+                        onChange={() => setForm({ ...form, paymentMethod: method.id })}
+                        className="accent-green-600 w-4 h-4" />
+                      <span className={`font-medium ${method.color}`}>{method.label}</span>
+                    </div>
+                    <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full font-medium">{method.badge}</span>
                   </label>
                 ))}
               </div>
@@ -89,7 +110,7 @@ export default function CheckoutPage() {
             <div className="card p-6">
               <label className="text-sm font-medium text-gray-600 block mb-2">Order Notes (optional)</label>
               <textarea rows={3} value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })}
-                placeholder="Special instructions..." className="input" />
+                placeholder="Special delivery instructions..." className="input" />
             </div>
           </div>
 
@@ -107,8 +128,8 @@ export default function CheckoutPage() {
               <span>Total</span>
               <span className="text-primary">Rs. {total.toLocaleString()}</span>
             </div>
-            <button type="submit" disabled={submitting} className="btn-primary w-full">
-              {submitting ? 'Placing Order...' : 'Place Order'}
+            <button type="submit" disabled={submitting} className="btn-primary w-full py-3 text-base font-semibold">
+              {submitting ? 'Processing...' : form.paymentMethod === 'eSewa' ? 'Pay with eSewa' : 'Place Order'}
             </button>
           </div>
         </div>

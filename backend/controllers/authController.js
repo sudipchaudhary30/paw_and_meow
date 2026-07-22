@@ -1,8 +1,10 @@
+const https = require('https');
 const crypto = require('crypto');
 const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User');
 const { generateToken } = require('../utils/jwt');
 const { createLog } = require('../utils/logger');
+const { checkAlerts } = require('../utils/alertSystem');
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -13,9 +15,52 @@ const cookieOptions = {
   maxAge: 7 * 24 * 60 * 60 * 1000
 };
 
+/** Verify Google reCAPTCHA v2 token against Google's siteverify API */
+const verifyRecaptcha = (token) => {
+  return new Promise((resolve) => {
+    if (!token) return resolve(false);
+    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+    if (!secretKey) {
+      console.warn('RECAPTCHA_SECRET_KEY not set — skipping reCAPTCHA check.');
+      return resolve(true); // Allow through if not configured (dev fallback)
+    }
+    const postData = `secret=${secretKey}&response=${token}`;
+    const options = {
+      hostname: 'www.google.com',
+      path: '/recaptcha/api/siteverify',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': Buffer.byteLength(postData)
+      }
+    };
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', (chunk) => { data += chunk; });
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(data);
+          resolve(json.success === true);
+        } catch {
+          resolve(false);
+        }
+      });
+    });
+    req.on('error', () => resolve(false));
+    req.write(postData);
+    req.end();
+  });
+};
+
 const register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, recaptchaToken } = req.body;
+
+    // Verify reCAPTCHA token with Google
+    const captchaPassed = await verifyRecaptcha(recaptchaToken);
+    if (!captchaPassed) {
+      return res.status(400).json({ error: 'CAPTCHA verification failed. Please complete the robot check.' });
+    }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -41,11 +86,19 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const { email, password, otp, fingerprint } = req.body;
+    const { email, password, otp, fingerprint, recaptchaToken } = req.body;
+
+    // Verify reCAPTCHA token with Google
+    const captchaPassed = await verifyRecaptcha(recaptchaToken);
+    if (!captchaPassed) {
+      return res.status(400).json({ error: 'CAPTCHA verification failed. Please complete the robot check.' });
+    }
+
     const user = await User.findOne({ email }).select('+password +mfaSecret +passwordlessToken +passwordlessExpiresAt +failedLoginAttempts +lockUntil');
 
     if (!user) {
       await createLog({ email, action: 'LOGIN_ATTEMPT', status: 'failure', details: 'Invalid credentials', ip: req.ip });
+      await checkAlerts('LOGIN_ATTEMPT', { email, ip: req.ip });
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
@@ -55,17 +108,24 @@ const login = async (req, res) => {
 
     if (!user || !(await user.comparePassword(password))) {
       user.failedLoginAttempts = (user.failedLoginAttempts || 0) + 1;
+      let locked = false;
       if (user.failedLoginAttempts >= 5) {
         user.lockUntil = new Date(Date.now() + 15 * 60 * 1000);
+        locked = true;
       }
       await user.save();
       await createLog({ user: user._id, email, action: 'LOGIN_ATTEMPT', status: 'failure', details: 'Invalid credentials', ip: req.ip });
+      await checkAlerts('LOGIN_ATTEMPT', { email, ip: req.ip });
+      if (locked) {
+        await checkAlerts('ACCOUNT_LOCKOUT', { email, ip: req.ip });
+      }
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
     if (!user.isActive) {
       return res.status(403).json({ error: 'Account deactivated. Contact support.' });
     }
+
 
     if (user.mfaEnabled && !otp) {
       return res.status(401).json({ error: 'MFA required.', requiresMfa: true });

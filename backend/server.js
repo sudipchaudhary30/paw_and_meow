@@ -10,6 +10,9 @@ const path = require('path');
 
 const { sanitizeInputs } = require('./middleware/sanitizeMiddleware');
 const { verifyCsrf, issueCsrfToken } = require('./middleware/csrfMiddleware');
+const { isIpAllowlisted } = require('./middleware/ipAllowlistMiddleware');
+const { createLog } = require('./utils/logger');
+const { checkAlerts } = require('./utils/alertSystem');
 
 const authRoutes = require('./routes/authRoutes');
 const petRoutes = require('./routes/petRoutes');
@@ -24,7 +27,7 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
-// ── Security HTTP Headers (Helmet) ──────────────────────────────────────────
+// Security HTTP Headers (Helmet)
 // Sets HSTS, X-Frame-Options, X-Content-Type-Options, CSP, etc.
 app.use(helmet({
   crossOriginEmbedderPolicy: false,
@@ -45,7 +48,7 @@ app.use(cors({
   credentials: true
 }));
 
-// ── HTTPS Redirect in Production ────────────────────────────────────────────
+// ── HTTPS Redirect in Production
 // Forces all http:// requests to https:// when deployed in production.
 app.use((req, res, next) => {
   if (process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] !== 'https') {
@@ -54,21 +57,57 @@ app.use((req, res, next) => {
   next();
 });
 
-// ── Rate Limiting ────────────────────────────────────────────────────────────
+// Rate Limiting 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,  // 15 minutes
   max: 100,
-  message: { error: 'Too many requests, please try again later.' }
+  message: { error: 'Too many requests, please try again later.' },
+  skip: (req) => isIpAllowlisted(req),
+  handler: async (req, res, next, options) => {
+    const clientIp = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    await createLog({
+      action: 'RATE_LIMIT_EXCEEDED',
+      status: 'failure',
+      ip: clientIp,
+      details: { path: req.originalUrl, message: 'General API rate limit exceeded' }
+    });
+    await checkAlerts('RATE_LIMIT_EXCEEDED', { ip: clientIp });
+    res.status(options.statusCode).json(options.message);
+  }
 });
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
-  message: { error: 'Too many auth attempts, please try again later.' }
+  message: { error: 'Too many auth attempts, please try again later.' },
+  skip: (req) => isIpAllowlisted(req),
+  handler: async (req, res, next, options) => {
+    const clientIp = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    await createLog({
+      action: 'RATE_LIMIT_EXCEEDED',
+      status: 'failure',
+      ip: clientIp,
+      details: { path: req.originalUrl, message: 'Authentication API rate limit exceeded' }
+    });
+    await checkAlerts('RATE_LIMIT_EXCEEDED', { ip: clientIp });
+    res.status(options.statusCode).json(options.message);
+  }
 });
 const uploadLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,  // 1 hour window
   max: 20,
-  message: { error: 'Too many file uploads, please wait before trying again.' }
+  message: { error: 'Too many file uploads, please wait before trying again.' },
+  skip: (req) => isIpAllowlisted(req),
+  handler: async (req, res, next, options) => {
+    const clientIp = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    await createLog({
+      action: 'RATE_LIMIT_EXCEEDED',
+      status: 'failure',
+      ip: clientIp,
+      details: { path: req.originalUrl, message: 'Upload API rate limit exceeded' }
+    });
+    await checkAlerts('RATE_LIMIT_EXCEEDED', { ip: clientIp });
+    res.status(options.statusCode).json(options.message);
+  }
 });
 
 app.use('/api/', limiter);
@@ -80,17 +119,17 @@ app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// ── XSS Input Sanitization ──────────────────────────────────────────────────
+//  XSS Input Sanitization
 // Strips malicious HTML/JS from all request body, query, and param fields.
 app.use(sanitizeInputs);
 
 // ── HTTP Request Logging ─────────────────────────────────────────────────────
 app.use(morgan('combined'));
 
-// ── CSRF Token Endpoint (public — must come before verifyCsrf) ───────────────
+// CSRF Token Endpoint (public — must come before verifyCsrf) 
 app.get('/api/csrf-token', issueCsrfToken);
 
-// ── CSRF Enforcement on mutating routes ──────────────────────────────────────
+// CSRF Enforcement on mutating routes 
 app.use(verifyCsrf);
 
 // ── Static Uploads ───────────────────────────────────────────────────────────
@@ -130,6 +169,6 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
+  console.log(` Server running on port ${PORT}`);
+  console.log(` Environment: ${process.env.NODE_ENV}`);
 });

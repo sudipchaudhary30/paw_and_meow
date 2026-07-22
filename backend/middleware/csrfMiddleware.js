@@ -3,7 +3,7 @@
  * 
  * Double-Submit Cookie CSRF protection pattern.
  * For stateless JWT APIs this implements the Synchronizer Token Pattern:
- *  1. GET /api/auth/csrf-token — server issues a random CSRF token in a cookie
+ *  1. GET /api/auth/csrf-token, server issues a random CSRF token in a cookie
  *     AND returns it in the response body.
  *  2. Client sends the token as X-CSRF-Token header on state-changing requests.
  *  3. Middleware verifies header value matches cookie value.
@@ -32,7 +32,7 @@ const issueCsrfToken = (req, res) => {
  */
 const verifyCsrf = (req, res, next) => {
   const SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS'];
-  const SKIP_PATHS = ['/api/auth/google']; // OAuth uses its own token
+  const SKIP_PATHS = ['/api/auth/google']; // OAuth bypasses CSRF token check
 
   if (SAFE_METHODS.includes(req.method)) return next();
   if (SKIP_PATHS.includes(req.path)) return next();

@@ -11,6 +11,7 @@ adminApi.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('token') || localStorage.getItem('adminToken');
     if (token) config.headers.Authorization = `Bearer ${token}`;
+    config.headers['X-Session-Fingerprint'] = window.navigator.userAgent;
   }
   return config;
 });

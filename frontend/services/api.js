@@ -22,6 +22,7 @@ api.interceptors.request.use(async (config) => {
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('token');
     if (token) config.headers.Authorization = `Bearer ${token}`;
+    config.headers['X-Session-Fingerprint'] = window.navigator.userAgent;
   }
 
   // Double-Submit Cookie CSRF injection
@@ -71,6 +72,7 @@ export const authAPI = {
   getMe: () => api.get('/auth/me'),
   updateProfile: (data) => api.put('/auth/profile', data),
   exportProfile: () => api.get('/auth/export'),
+  getCaptcha: () => api.get('/auth/captcha'),
 };
 
 // Pets
@@ -104,6 +106,7 @@ export const visitAPI = {
 // Orders
 export const orderAPI = {
   place: (data) => api.post('/orders', data),
+  verifyEsewa: (data) => api.post('/orders/esewa/verify', data),
   getMy: () => api.get('/orders/my'),
 };
 

@@ -20,14 +20,16 @@ const orderSchema = new mongoose.Schema({
   },
   paymentMethod: {
     type: String,
-    enum: ['Cash on Delivery', 'eSewa', 'Khalti'],
-    default: 'Cash on Delivery'
+    enum: ['eSewa', 'Cash on Delivery'],
+    default: 'eSewa'
   },
   status: {
     type: String,
-    enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
+    enum: ['Pending', 'Paid', 'Fulfilled', 'Failed', 'Rolled_Back'],
     default: 'Pending'
   },
+  esewaTransactionUuid: { type: String, unique: true, sparse: true },
+  esewaTransactionCode: { type: String },
   notes: { type: String, trim: true }
 }, { timestamps: true });
 

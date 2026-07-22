@@ -1,6 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { placeOrder, getMyOrders, getAllOrders, updateOrderStatus } = require('../controllers/orderController');
+const { placeOrder, verifyEsewaPayment, getMyOrders, getAllOrders, updateOrderStatus } = require('../controllers/orderController');
 const { protect } = require('../middleware/authMiddleware');
 const { requireRole } = require('../middleware/roleMiddleware');
 const { handleValidation } = require('../middleware/validateInput');
@@ -14,6 +14,8 @@ router.post('/', protect, [
   body('shippingAddress.city').notEmpty().withMessage('City required'),
   handleValidation
 ], placeOrder);
+
+router.post('/esewa/verify', protect, verifyEsewaPayment);
 
 router.get('/my', protect, getMyOrders);
 router.get('/', protect, requireRole('admin'), getAllOrders);
