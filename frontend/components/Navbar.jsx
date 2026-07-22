@@ -54,7 +54,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="glass sticky top-0 z-50 border-b border-slate-200/50 bg-white/75 backdrop-blur-md transition-all duration-300">
+    <nav suppressHydrationWarning className="glass sticky top-0 z-50 border-b border-slate-200/50 bg-white/75 backdrop-blur-md transition-all duration-300">
       <div className="w-full px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-2">
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
           <img 

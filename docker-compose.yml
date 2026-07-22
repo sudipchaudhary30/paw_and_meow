@@ -3,7 +3,6 @@ version: '3.8'
 services:
   mongodb:
     image: mongo:6.0
-    container_name: pawhome_mongodb
     restart: always
     ports:
       - "27017:27017"
@@ -18,7 +17,6 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: pawhome_backend
     restart: always
     ports:
       - "5000:5000"
@@ -38,7 +36,6 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: pawhome_frontend
     restart: always
     ports:
       - "3000:3000"
@@ -55,3 +52,4 @@ volumes:
 networks:
   pawhome_net:
     driver: bridge
+

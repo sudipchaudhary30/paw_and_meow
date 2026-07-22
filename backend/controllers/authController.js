@@ -72,9 +72,8 @@ const register = async (req, res) => {
     // const user = await User.create({ name, email, password, role: req.body.role });
     // ^ No role validation — attacker could self-assign admin by sending { role: 'admin' }
     // AFTER FIX (Remediated Code): Enforced role restriction in authController.js
-    // Prevent self-assigning admin role unless no users exist
-    const userCount = await User.countDocuments();
-    const assignedRole = (role === 'admin' && userCount === 0) ? 'admin' : 'user';
+    // Public registration ALWAYS assigns role 'user'. Admin accounts must be created out-of-band.
+    const assignedRole = 'user';
 
     const user = await User.create({ name, email, password, role: assignedRole });
     const token = generateToken(user._id, user.role);
@@ -82,7 +81,7 @@ const register = async (req, res) => {
     await createLog({ user: user._id, email, action: 'REGISTER', status: 'success', ip: req.ip });
 
     res.cookie('token', token, cookieOptions);
-    res.status(201).json({ token, user });
+    res.status(201).json({ user });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -107,16 +106,10 @@ const login = async (req, res) => {
     }
 
     if (user.lockUntil && user.lockUntil > new Date()) {
-      return res.status(423).json({ error: 'Account temporarily locked. Try again later.' });
+      return res.status(423).json({ error: 'Account temporarily locked due to multiple failed login attempts. Try again later.' });
     }
 
-    // BEFORE FIX (Vulnerable Code - Finding 2):
-    // if (!user || !(await user.comparePassword(password))) {
-    //   return res.status(401).json({ error: 'Invalid credentials' });
-    // }
-    // ^ No lockout tracking — unlimited brute-force attempts allowed
-    // AFTER FIX (Remediated Code): Account lockout & attempt tracking
-    if (!user || !(await user.comparePassword(password))) {
+    if (!(await user.comparePassword(password))) {
       user.failedLoginAttempts = (user.failedLoginAttempts || 0) + 1;
       let locked = false;
       if (user.failedLoginAttempts >= 5) {
@@ -165,7 +158,7 @@ const login = async (req, res) => {
     // res.json({ token, user }); // Token returned in JSON body only — forced localStorage storage
     // AFTER FIX (Remediated Code): Token bound to HttpOnly, Secure, SameSite=Strict Cookie
     res.cookie('token', token, cookieOptions);
-    res.json({ token, user });
+    res.json({ user });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
