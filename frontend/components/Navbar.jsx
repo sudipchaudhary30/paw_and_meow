@@ -15,20 +15,26 @@ export default function Navbar() {
     setCartCount(cart.reduce((acc, i) => acc + i.quantity, 0));
   };
 
- 
+  const checkAuth = () => {
+    const storedUser = localStorage.getItem('user');
+    const storedAdmin = localStorage.getItem('adminUser');
+    if (storedUser) {
+      const parsed = JSON.parse(storedUser);
+      setUser(parsed);
+    } else if (storedAdmin) {
+      const parsed = JSON.parse(storedAdmin);
+      setUser(parsed);
+    } else {
+      setUser(null);
+    }
+  };
+
   useEffect(() => {
     checkAuth();
     updateCartCount();
 
     // Listen for cart and auth changes
-    window.addEventListener('cartUpdated', updateCartCount);
-    window.addEventListener('authUpdated', checkAuth);
-    
-    return () => {
-      window.removeEventListener('cartUpdated', updateCartCount);
-      window.removeEventListener('authUpdated', checkAuth);
-    };
-  }, []);
+   
 
   const logout = () => {
     localStorage.removeItem('token');
