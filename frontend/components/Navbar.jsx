@@ -10,22 +10,12 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
 
-
-
-  const checkAuth = () => {
-    const storedUser = localStorage.getItem('user');
-    const storedAdmin = localStorage.getItem('adminUser');
-    if (storedUser) {
-      const parsed = JSON.parse(storedUser);
-      setUser(parsed);
-    } else if (storedAdmin) {
-      const parsed = JSON.parse(storedAdmin);
-      setUser(parsed);
-    } else {
-      setUser(null);
-    }
+  const updateCartCount = () => {
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    setCartCount(cart.reduce((acc, i) => acc + i.quantity, 0));
   };
 
+ 
   useEffect(() => {
     checkAuth();
     updateCartCount();
