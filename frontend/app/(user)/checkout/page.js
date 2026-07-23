@@ -10,7 +10,12 @@ export default function CheckoutPage() {
   const [form, setForm] = useState({ fullName: '', address: '', city: '', postalCode: '', paymentMethod: 'eSewa', notes: '' });
   const [submitting, setSubmitting] = useState(false);
 
-  
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) { router.push('/auth/login'); return; }
+    const stored = JSON.parse(localStorage.getItem('cart') || '[]');
+    if (stored.length === 0) { router.push('/cart'); return; }
+    setCart(stored);
 
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     setForm(f => ({ ...f, fullName: user.name || '' }));
@@ -29,18 +34,7 @@ export default function CheckoutPage() {
         notes: form.notes
       });
 
-      if (form.paymentMethod === 'eSewa' && res.data?.esewaForm) {
-        toast.loading('Redirecting to eSewa Payment Gateway...');
-        const { esewaUrl, ...params } = res.data.esewaForm;
-        
-        const queryParams = new URLSearchParams();
-        Object.keys(params).forEach(key => {
-          queryParams.set(key, params[key]);
-        });
-
-        router.push(`/payment/esewa/gateway?${queryParams.toString()}`);
-        return;
-      }
+     
 
       localStorage.removeItem('cart');
       toast.success('Order placed successfully!');
