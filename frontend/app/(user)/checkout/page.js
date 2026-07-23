@@ -10,12 +10,7 @@ export default function CheckoutPage() {
   const [form, setForm] = useState({ fullName: '', address: '', city: '', postalCode: '', paymentMethod: 'eSewa', notes: '' });
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) { router.push('/auth/login'); return; }
-    const stored = JSON.parse(localStorage.getItem('cart') || '[]');
-    if (stored.length === 0) { router.push('/cart'); return; }
-    setCart(stored);
+  
 
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     setForm(f => ({ ...f, fullName: user.name || '' }));
