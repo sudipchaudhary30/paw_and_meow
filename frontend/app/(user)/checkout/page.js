@@ -34,7 +34,18 @@ export default function CheckoutPage() {
         notes: form.notes
       });
 
-     
+      if (form.paymentMethod === 'eSewa' && res.data?.esewaForm) {
+        toast.loading('Redirecting to eSewa Payment Gateway...');
+        const { esewaUrl, ...params } = res.data.esewaForm;
+
+        const queryParams = new URLSearchParams();
+        Object.keys(params).forEach(key => {
+          queryParams.set(key, params[key]);
+        });
+
+        router.push(`/payment/esewa/gateway?${queryParams.toString()}`);
+        return;
+      }
 
       localStorage.removeItem('cart');
       toast.success('Order placed successfully!');

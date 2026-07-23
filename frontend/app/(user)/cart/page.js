@@ -7,9 +7,7 @@ import { ShoppingCart, Package } from 'lucide-react';
 export default function CartPage() {
   const [cart, setCart] = useState([]);
 
-  useEffect(() => {
-    setCart(JSON.parse(localStorage.getItem('cart') || '[]'));
-  }, []);
+  
 
   const updateQuantity = (id, qty) => {
     const updated = cart.map(i => i._id === id ? { ...i, quantity: Math.max(1, qty) } : i);
