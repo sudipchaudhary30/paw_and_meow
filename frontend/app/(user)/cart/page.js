@@ -7,7 +7,9 @@ import { ShoppingCart, Package } from 'lucide-react';
 export default function CartPage() {
   const [cart, setCart] = useState([]);
 
-  
+  useEffect(() => {
+    setCart(JSON.parse(localStorage.getItem('cart') || '[]'));
+  }, []);
 
   const updateQuantity = (id, qty) => {
     const updated = cart.map(i => i._id === id ? { ...i, quantity: Math.max(1, qty) } : i);
@@ -16,13 +18,6 @@ export default function CartPage() {
     window.dispatchEvent(new Event('cartUpdated'));
   };
 
-  const removeItem = (id) => {
-    const updated = cart.filter(i => i._id !== id);
-    setCart(updated);
-    localStorage.setItem('cart', JSON.stringify(updated));
-    window.dispatchEvent(new Event('cartUpdated'));
-    toast.success('Item removed');
-  };
 
   const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
