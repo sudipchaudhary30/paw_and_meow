@@ -19,7 +19,8 @@ export default function AddPetPage() {
     const file = e.target.files[0];
     if (!file) return;
 
-   
+    const formData = new FormData();
+    formData.append('image', file);
 
     setUploadingImage(true);
     try {
@@ -32,13 +33,7 @@ export default function AddPetPage() {
     setUploadingImage(false);
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      toast.error('Please login to list a pet for adoption.');
-      router.push('/auth/login');
-    }
-  }, []);
+ 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
