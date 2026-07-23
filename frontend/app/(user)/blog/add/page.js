@@ -5,7 +5,8 @@ import { blogAPI, uploadAPI } from '../../../../services/api';
 import { toast } from 'react-hot-toast';
 import { Plus, X } from 'lucide-react';
 
-
+const CATEGORIES = ['Dog Care', 'Nutrition', 'Security', 'Adoption', 'Other'];
+const blankForm = { title: '', category: 'Dog Care', content: '', imageUrl: '' };
 
 export default function WriteBlogPostPage() {
   const router = useRouter();
