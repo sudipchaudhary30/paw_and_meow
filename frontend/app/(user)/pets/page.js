@@ -24,7 +24,11 @@ export default function PetsPage() {
     setLoading(false);
   };
 
-  
+  useEffect(() => {
+    const stored = localStorage.getItem('user');
+    if (stored) setUser(JSON.parse(stored));
+  }, []);
+
   useEffect(() => { fetchPets(); }, [search, species, status, page]);
 
   return (

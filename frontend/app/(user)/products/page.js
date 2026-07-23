@@ -11,15 +11,7 @@ export default function ProductsPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const fetchProducts = async () => {
-    setLoading(true);
-    try {
-      const { data } = await productAPI.getAll({ search, category, page });
-      setProducts(data.products);
-      setTotalPages(data.pages);
-    } catch { setProducts([]); }
-    setLoading(false);
-  };
+  
 
   useEffect(() => { fetchProducts(); }, [search, category, page]);
 
