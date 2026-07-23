@@ -14,13 +14,17 @@ export default function PetsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [user, setUser] = useState(null);
 
+  const fetchPets = async () => {
+    setLoading(true);
+    try {
+      const { data } = await petAPI.getAll({ search, species, status, page });
+      setPets(data.pets);
+      setTotalPages(data.pages);
+    } catch { setPets([]); }
+    setLoading(false);
+  };
+
   
-
-  useEffect(() => {
-    const stored = localStorage.getItem('user');
-    if (stored) setUser(JSON.parse(stored));
-  }, []);
-
   useEffect(() => { fetchPets(); }, [search, species, status, page]);
 
   return (
