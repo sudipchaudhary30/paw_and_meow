@@ -10,10 +10,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
 
-  const updateCartCount = () => {
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    setCartCount(cart.reduce((acc, i) => acc + i.quantity, 0));
-  };
+
 
   const checkAuth = () => {
     const storedUser = localStorage.getItem('user');
