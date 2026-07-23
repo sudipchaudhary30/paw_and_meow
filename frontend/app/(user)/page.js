@@ -35,8 +35,7 @@ export default function HomePage() {
         <div className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-28">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
 
-            {/* Text Content Column */}
-            <div className="md:col-span-7 lg:col-span-6 text-left">
+            
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.15] mb-5">
                 Adopt a companion, <br className="hidden sm:inline" />
