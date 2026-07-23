@@ -8,6 +8,6 @@ const requireRole = (...roles) => {
     }
     next();
   };
-
+};
 
 module.exports = { requireRole };
