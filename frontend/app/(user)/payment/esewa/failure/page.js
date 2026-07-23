@@ -8,7 +8,11 @@ export default function EsewaFailurePage() {
         !
       </div>
       <div>
-       
+        <h2 className="text-2xl font-bold text-gray-800">eSewa Payment Canceled</h2>
+        <p className="text-sm text-gray-600 mt-1">
+          The transaction was canceled or could not be completed at this time.
+        </p>
+      </div>
 
       <div className="pt-2 flex justify-center gap-4">
         <Link href="/checkout" className="btn-primary">Try Again</Link>
