@@ -9,7 +9,9 @@ const pillars = [
     desc: 'We support local rescue initiatives to ensure every adoptable pet is vaccinated, neutered, and healthy.'
   },
   {
-    
+    icon: <ShieldCheck className="w-8 h-8 text-primary" />,
+    title: 'Secure & Verified',
+    desc: 'Our academic security practices ensure safety during transaction processes and personal visits.'
   },
   {
     icon: <ShoppingBag className="w-8 h-8 text-accent" />,
