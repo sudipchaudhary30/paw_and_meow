@@ -43,7 +43,16 @@ export default function RegisterPage() {
     }
   }, [router]);
 
- 
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.google) return;
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!clientId) return;
+    window.google.accounts.id.initialize({ client_id: clientId, callback: handleGoogle });
+    const btn = document.getElementById('google-register-button');
+    if (btn) {
+      window.google.accounts.id.renderButton(btn, { theme: 'outline', size: 'large', width: btn.offsetWidth || 400 });
+    }
+  }, [handleGoogle]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -72,8 +81,7 @@ export default function RegisterPage() {
       recaptchaRef.current?.reset();
       setRecaptchaToken('');
     }
-    setLoading(false);
-  };
+    
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-10">
