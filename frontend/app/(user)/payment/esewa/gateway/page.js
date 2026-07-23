@@ -14,9 +14,7 @@ function EsewaGatewayContent() {
   const failureUrl = searchParams.get('failure_url') || '/payment/esewa/failure';
   const serverSignature = searchParams.get('signature') || '';
 
-  const [esewaId, setEsewaId] = useState('9806800001');
-  const [mpin, setMpin] = useState('1122');
-  const [processing, setProcessing] = useState(false);
+ 
 
   const handlePayment = (e) => {
     e.preventDefault();
