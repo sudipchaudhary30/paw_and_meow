@@ -19,14 +19,7 @@ export default function ProductCard({ product }) {
   return (
     <div className="card group hover:shadow-md transition-shadow duration-200 flex flex-col h-full">
       
-      {/* Product Image */}
-      <div className="h-44 sm:h-48 bg-slate-50 flex items-center justify-center overflow-hidden relative">
-        {product.imageUrl ? (
-          <img 
-            src={product.imageUrl} 
-            alt={product.name} 
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-          />
+      
         ) : (
           <div className="flex flex-col items-center justify-center text-slate-300 group-hover:scale-110 transition-transform duration-500">
             <Package className="w-16 h-16 opacity-75" />
