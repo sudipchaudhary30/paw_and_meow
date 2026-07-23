@@ -1,11 +1,7 @@
 import Link from 'next/link';
 import { PawPrint, Syringe, Scissors } from 'lucide-react';
 
-const statusColors = {
-  Available: 'bg-emerald-50 text-emerald-700 border-emerald-100',
-  Pending: 'bg-amber-50 text-amber-700 border-amber-100',
-  Adopted: 'bg-slate-100 text-slate-600 border-slate-200',
-};
+
 
 export default function PetCard({ pet }) {
   return (

@@ -85,7 +85,19 @@ export default function Navbar() {
             {cartCount > 0 && (
               <span className="absolute top-0 right-0 bg-accent text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-bounce">{cartCount}</span>
             )}
-          
+          </Link>
+          {user ? (
+            <div className="flex items-center gap-3">
+              <span className="text-slate-600 text-sm font-medium">Hi, {user.name?.split(' ')[0]}</span>
+              <button onClick={logout} className="border border-slate-300 text-slate-600 px-3 py-1.5 rounded text-xs font-semibold hover:bg-slate-100 transition-colors">Logout</button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <Link href="/auth/login" className="text-slate-700 font-semibold hover:text-primary text-sm transition-colors">Login</Link>
+              <Link href="/auth/register" className="btn-primary text-xs px-4 py-2">Register</Link>
+            </div>
+          )}
+        </div>
 
         {/* Mobile toggle */}
         <button 
