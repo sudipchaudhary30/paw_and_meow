@@ -56,12 +56,7 @@ export default function LoginPage() {
     }
   }, [handleGoogle]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!recaptchaToken) {
-      toast.error('Please complete the CAPTCHA verification.');
-      return;
-    }
+ 
     setLoading(true);
     try {
       const { data } = await authAPI.login({ ...form, fingerprint, recaptchaToken });
