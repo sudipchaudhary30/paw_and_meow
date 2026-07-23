@@ -19,8 +19,7 @@ export default function AddPetPage() {
     const file = e.target.files[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('image', file);
+   
 
     setUploadingImage(true);
     try {
