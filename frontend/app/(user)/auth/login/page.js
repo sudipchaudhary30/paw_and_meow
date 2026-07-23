@@ -116,7 +116,14 @@ export default function LoginPage() {
           )}
 
           {/* Google reCAPTCHA v2 */}
-         
+          <div className="flex justify-center">
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={RECAPTCHA_SITE_KEY}
+              onChange={(token) => setRecaptchaToken(token || '')}
+              onExpired={() => setRecaptchaToken('')}
+            />
+          </div>
 
           <button type="submit" disabled={loading || !recaptchaToken} className="btn-primary w-full mt-2 disabled:opacity-50">
             {loading ? 'Processing...' : passwordlessMode ? 'Verify Code' : 'Login'}

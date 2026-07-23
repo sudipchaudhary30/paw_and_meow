@@ -8,13 +8,4 @@ export const metadata = {
   description: 'Adopt a pet or shop for accessories on PawHome.',
 };
 
-export default function UserLayout({ children }) {
-  return (
-    <div className="min-h-screen overflow-x-hidden bg-[#F8FAFC] text-slate-800" suppressHydrationWarning>
-      <Navbar />
-      <main className="min-h-screen w-full overflow-x-hidden">{children}</main>
-      <Footer />
-      <Toaster position="top-right" />
-    </div>
-  );
-}
+
