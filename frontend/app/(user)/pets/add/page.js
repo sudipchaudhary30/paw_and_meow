@@ -33,7 +33,13 @@ export default function AddPetPage() {
     setUploadingImage(false);
   };
 
- 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.error('Please login to list a pet for adoption.');
+      router.push('/auth/login');
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
