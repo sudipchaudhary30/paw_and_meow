@@ -18,6 +18,13 @@ export default function CartPage() {
     window.dispatchEvent(new Event('cartUpdated'));
   };
 
+  const removeItem = (id) => {
+    const updated = cart.filter(i => i._id !== id);
+    setCart(updated);
+    localStorage.setItem('cart', JSON.stringify(updated));
+    window.dispatchEvent(new Event('cartUpdated'));
+    toast.success('Item removed');
+  };
 
   const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
