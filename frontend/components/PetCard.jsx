@@ -9,16 +9,7 @@ const statusColors = {
 
 export default function PetCard({ pet }) {
   return (
-    <div className="card group hover:shadow-md transition-shadow duration-200">
-      
-      {/* Image container */}
-      <div className="h-44 sm:h-48 bg-gradient-to-br from-petbg to-[#DFE7F5] flex items-center justify-center overflow-hidden relative">
-        {pet.imageUrl ? (
-          <img 
-            src={pet.imageUrl} 
-            alt={pet.name} 
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-          />
+   
         ) : (
           <div className="flex flex-col items-center justify-center text-primary-light group-hover:scale-110 transition-transform duration-500">
             <PawPrint className="w-16 h-16 opacity-70" />
