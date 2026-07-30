@@ -14,7 +14,13 @@ const { isIpAllowlisted } = require('./middleware/ipAllowlistMiddleware');
 const { createLog } = require('./utils/logger');
 const { checkAlerts } = require('./utils/alertSystem');
 
-
+const authRoutes = require('./routes/authRoutes');
+const petRoutes = require('./routes/petRoutes');
+const productRoutes = require('./routes/productRoutes');
+const visitRoutes = require('./routes/visitRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const blogRoutes = require('./routes/blogRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
 
 const app = express();
 
