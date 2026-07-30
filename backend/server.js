@@ -116,7 +116,10 @@ app.use('/api/', limiter);
 app.use('/api/auth/', authLimiter);
 app.use('/api/upload/', uploadLimiter);
 
-/
+// ── Body & Cookie Parsing ────────────────────────────────────────────────────
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 //  XSS Input Sanitization
 // Strips malicious HTML/JS from all request body, query, and param fields.
