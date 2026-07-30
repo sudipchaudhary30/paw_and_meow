@@ -57,7 +57,26 @@ app.use((req, res, next) => {
   next();
 });
 
+// Rate Limiting — skip entirely in development to avoid 429s during hot-reload
+const isDev = process.env.NODE_ENV !== 'production';
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,  // 15 minutes
+  max: 500,
+  message: { error: 'Too many requests, please try again later.' },
+  skip: (req) => isDev || isIpAllowlisted(req),
+  handler: async (req, res, next, options) => {
+    const clientIp = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    await createLog({
+      action: 'RATE_LIMIT_EXCEEDED',
+      status: 'failure',
+      ip: clientIp,
+      details: { path: req.originalUrl, message: 'General API rate limit exceeded' }
+    });
+    await checkAlerts('RATE_LIMIT_EXCEEDED', { ip: clientIp });
+    res.status(options.statusCode).json(options.message);
+  }
+});
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
