@@ -37,7 +37,13 @@ const issueCsrfToken = (req, res) => {
 // AFTER FIX (Remediated Code): Double-Submit Cookie pattern enforced below
 const verifyCsrf = (req, res, next) => {
   const SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS'];
-  const SKIP_PATHS = ['/api/auth/google']; // OAuth bypasses CSRF token check
+  const SKIP_PATHS = [
+    '/api/auth/google',           // OAuth uses its own ID-token verification
+    '/api/auth/login',            // Pre-auth: no session to CSRF-protect
+    '/api/auth/register',         // Pre-auth: no session to CSRF-protect
+    '/api/auth/passwordless/request', // Pre-auth
+    '/api/auth/passwordless/login',   // Pre-auth
+  ];
 
   if (SAFE_METHODS.includes(req.method)) return next();
   if (SKIP_PATHS.includes(req.path)) return next();
