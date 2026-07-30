@@ -14,7 +14,8 @@ const requestVisit = async (req, res) => {
     if (existing) {
       return res.status(409).json({ error: 'You already have a pending visit for this pet.' });
     }
-
+    
+    // 1. Logging a Pet Visit Request 
     const visit = await VisitRequest.create({
       user: req.user._id,
       pet: petId,

@@ -102,4 +102,8 @@ export const adminUploadAPI = {
   }),
 };
 
+export const adminLogAPI = {
+  getLogs: (params) => adminApi.get('/auth/admin/logs', { params }),
+};
+
 export default adminApi;

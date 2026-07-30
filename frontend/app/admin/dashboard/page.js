@@ -1,13 +1,15 @@
 'use client';
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../../components/admin/AdminLayout';
-import { adminPetAPI, adminProductAPI, adminVisitAPI, adminOrderAPI } from '../../../services/adminApi';
-import { PawPrint, Package, Calendar, ShoppingCart, Clock, AlertTriangle } from 'lucide-react';
+import { adminPetAPI, adminProductAPI, adminVisitAPI, adminOrderAPI, adminLogAPI } from '../../../services/adminApi';
+import { PawPrint, Package, Calendar, ShoppingCart, Clock, AlertTriangle, ShieldCheck } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({ pets: 0, products: 0, visits: 0, orders: 0, pendingVisits: 0, pendingOrders: 0 });
   const [recentVisits, setRecentVisits] = useState([]);
   const [recentOrders, setRecentOrders] = useState([]);
+  const [recentLogs, setRecentLogs] = useState([]);
 
   useEffect(() => {
     Promise.all([
@@ -17,7 +19,8 @@ export default function Dashboard() {
       adminOrderAPI.getAll({ limit: 5 }),
       adminVisitAPI.getAll({ status: 'Pending', limit: 1 }),
       adminOrderAPI.getAll({ status: 'Pending', limit: 1 }),
-    ]).then(([pets, products, visits, orders, pendVisits, pendOrders]) => {
+      adminLogAPI.getLogs({ limit: 5 }),
+    ]).then(([pets, products, visits, orders, pendVisits, pendOrders, logs]) => {
       setStats({
         pets: pets.data.total || 0,
         products: products.data.total || 0,
@@ -28,6 +31,7 @@ export default function Dashboard() {
       });
       setRecentVisits(visits.data.visits || []);
       setRecentOrders(orders.data.orders || []);
+      setRecentLogs(logs.data.logs || []);
     }).catch(() => {});
   }, []);
 
@@ -98,6 +102,39 @@ export default function Dashboard() {
                   </div>
                 ))}
             </div>
+          </div>
+        </div>
+
+        {/* Security Audit Trail Summary Card */}
+        <div className="card p-5 border border-slate-200 bg-white shadow-sm rounded-2xl">
+          <div className="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-primary" />
+              <h2 className="font-bold text-slate-800 text-base">Security Audit Trail Summary</h2>
+            </div>
+            <Link href="/admin/logs" className="text-xs font-semibold text-primary hover:underline">
+              View All Audit Logs →
+            </Link>
+          </div>
+
+          <div className="divide-y divide-slate-100">
+            {recentLogs.length === 0 ? (
+              <div className="py-6 text-center text-slate-400 text-sm">No security audit logs captured yet.</div>
+            ) : (
+              recentLogs.slice(0, 4).map(l => (
+                <div key={l._id} className="py-3 flex justify-between items-center text-xs">
+                  <div>
+                    <span className={`inline-block px-2 py-0.5 rounded font-bold mr-2 ${
+                      l.status === 'success' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
+                    }`}>
+                      {l.action}
+                    </span>
+                    <span className="text-slate-700 font-medium">{l.email || l.user?.email || 'Anonymous'}</span>
+                  </div>
+                  <span className="text-slate-400 font-mono">{new Date(l.createdAt).toLocaleTimeString()}</span>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

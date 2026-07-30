@@ -10,6 +10,7 @@ import {
   ShoppingCart, 
   BookOpen, 
   Users, 
+  ShieldCheck,
   LogOut 
 } from 'lucide-react';
 
@@ -21,6 +22,7 @@ const navItems = [
   { href: '/admin/orders', Icon: ShoppingCart, label: 'Orders' },
   { href: '/admin/blogs', Icon: BookOpen, label: 'Blogs' },
   { href: '/admin/users', Icon: Users, label: 'Users' },
+  { href: '/admin/logs', Icon: ShieldCheck, label: 'Audit Logs' },
 ];
 
 export default function Sidebar() {

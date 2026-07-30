@@ -152,6 +152,10 @@ const login = async (req, res) => {
     // BEFORE FIX (Vulnerable Code - Finding 6):
     // await createLog({ action: 'LOGIN', details: req.body }); // Capturing raw password in logs
     // AFTER FIX (Remediated Code): Sanitized audit log entry
+
+    //Sanitized User Login Logging (authController.js)
+    // Sanitized audit log entry (does NOT capture raw password in req.body)
+
     await createLog({ user: user._id, email, action: 'LOGIN', status: 'success', ip: req.ip });
 
     // BEFORE FIX (Vulnerable Code - Finding 3):

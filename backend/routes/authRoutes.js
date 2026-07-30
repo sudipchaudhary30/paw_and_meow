@@ -74,6 +74,29 @@ router.get('/admin/diagnostics', protect, requireRole('admin'), enforceIpAllowli
   });
 });
 
+router.get('/admin/logs', protect, requireRole('admin'), async (req, res) => {
+  try {
+    const Log = require('../models/Log');
+    const { search, action, status, limit = 100 } = req.query;
+    let filter = {};
+    if (action) filter.action = action;
+    if (status) filter.status = status;
+    if (search) {
+      filter.$or = [
+        { email: { $regex: search, $options: 'i' } },
+        { action: { $regex: search, $options: 'i' } },
+        { ip: { $regex: search, $options: 'i' } },
+        { resource: { $regex: search, $options: 'i' } }
+      ];
+    }
+    const logs = await Log.find(filter)
+      .populate('user', 'name email role')
+      .sort({ createdAt: -1 })
+      .limit(Number(limit));
+    res.json({ logs });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 router.get('/users', protect, requireRole('admin'), async (req, res) => {
   try {
     const User = require('../models/User');
